@@ -470,11 +470,32 @@ class ClintWebViewClient(
 
         DataSaverRequestFilter.intercept(view.context.applicationContext, prefs, request, cachedPageUrl)?.let { return it }
 
-        val websiteBlockerEnabled = prefs.getBoolean("website_blocker_enabled", false)
-        if (request.isForMainFrame && WebsiteBlockerEngine.isActive && websiteBlockerEnabled) {
+                  val websiteBlockerEnabled = prefs.getBoolean("website_blocker_enabled", false)
+        if (WebsiteBlockerEngine.isActive && websiteBlockerEnabled) {
+            
+            // 1. Bloquear con tu motor nativo (cualquier petición, no solo el frame principal)
             if (WebsiteBlockerWebIntegration.isHostBlocked(request.url.host)) {
-                onWebsiteBlockedCallback(request.url.toString())
+                if (request.isForMainFrame) {
+                    onWebsiteBlockedCallback(request.url.toString())
+                }
                 return WebResourceResponse("text/html", "utf-8", java.io.ByteArrayInputStream(ByteArray(0)))
+            }
+
+            // 2. Bloqueo específico para anuncios de YouTube (por ruta)
+            val urlString = request.url.toString()
+            if (urlString.contains("youtube.com") || urlString.contains("googlevideo.com")) {
+                val adPaths = listOf(
+                    "/api/stats/ads", 
+                    "/pagead/", 
+                    "/ptracking", 
+                    "/get_video_info",
+                    "/api/stats/atr",
+                    "/api/stats/playback"
+                )
+                if (adPaths.any { path -> urlString.contains(path) }) {
+                    // Devolvemos una respuesta vacía para bloquear el anuncio
+                    return WebResourceResponse("text/plain", "utf-8", java.io.ByteArrayInputStream("".toByteArray()))
+                }
             }
         }
 
