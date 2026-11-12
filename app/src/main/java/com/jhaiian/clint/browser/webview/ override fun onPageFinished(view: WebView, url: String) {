@@ -679,7 +679,5 @@ class ClintWebViewClient(
         // Ejecutamos el script en el WebView
         view.evaluateJavascript(js, null)
     }
-    // --- FIN DE LA NUEVA FUNCIÓN ---
-
-} // <--- ESTA SIGUE SIENDO LA ÚLTIMA LLAVE DE TU ARCHIVO
+    } 
 
