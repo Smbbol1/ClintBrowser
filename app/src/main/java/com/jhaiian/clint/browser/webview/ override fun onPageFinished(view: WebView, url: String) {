@@ -132,7 +132,7 @@ class ClintWebViewClient(
         if (isActive()) onPageStartedCallback(url)
     }
 
-        override fun onPageFinished(view: WebView, url: String) {
+          override fun onPageFinished(view: WebView, url: String) {
         if (url.startsWith("https://", ignoreCase = true)) Uri.parse(url).host?.lowercase()?.let { upgradedHostOrigins.remove(it) }
         super.onPageFinished(view, url)
         cachedPageUrl = url
@@ -600,17 +600,49 @@ class ClintWebViewClient(
     private fun hostOf(url: String?): String? =
         url?.let { runCatching { Uri.parse(it).host }.getOrNull() }
 
-    private fun isMainFrameHost(view: WebView, host: String): Boolean {
-        if (host.isEmpty()) return false
-        return listOf(cachedPageUrl, view.url, view.originalUrl).any { hostOf(it).equals(host, ignoreCase = true) }
-    }
-        private fun isMainFrameHost(view: WebView, host: String): Boolean {
+       private fun isMainFrameHost(view: WebView, host: String): Boolean {
         if (host.isEmpty()) return false
         return listOf(cachedPageUrl, view.url, view.originalUrl).any { hostOf(it).equals(host, ignoreCase = true) }
     }
 
-    // --- PEGA LA NUEVA FUNCIÓN AQUÍ ABAJO ---
     private fun injectYouTubeAdBlock(view: WebView) {
+        val js = """
+            (function() {
+                // 1. Ocultar banners y elementos de anuncios
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    #masthead-ad, #player-ads, .ytp-ad-overlay-container, 
+                    .ytp-ad-progress-list, #panels-full-bleed-container { 
+                        display: none !important; 
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // 2. Bucle para saltar anuncios en el video
+                setInterval(function() {
+                    // Buscar el botón de "Omitir anuncio"
+                    const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern');
+                    if (skipButton) {
+                        skipButton.click();
+                    }
+                    
+                    // Si es un anuncio que no se puede omitir, intentar acelerarlo o silenciarlo
+                    const adModule = document.querySelector('.ad-showing');
+                    if (adModule) {
+                        const video = document.querySelector('video');
+                        if (video) {
+                            video.muted = true; // Silenciar el anuncio
+                            video.currentTime = video.duration; // Saltar al final del anuncio si es posible
+                        }
+                    }
+                }, 500); // Revisar cada 500 milisegundos
+            })();
+        """.trimIndent()
+        
+        // Ejecutamos el script en el WebView
+        view.evaluateJavascript(js, null)
+    }
+}
         val js = """
             (function() {
                 // 1. Ocultar banners y elementos de anuncios
