@@ -207,8 +207,9 @@ internal fun MainActivity.buildMenuSnapshot(previous: BrowserMenuSnapshot?): Bro
         canTranslatePage = currentUrl.startsWith("http://") || currentUrl.startsWith("https://"),
         isPageTranslated = (wv as? com.jhaiian.clint.browser.webview.ClintWebView)?.translator?.state?.value?.isRequested == true,
         canToggleTabMute = (wv as? com.jhaiian.clint.browser.webview.ClintWebView)?.audioState?.let { it.audible || it.muted } == true,
-        isTabMuted = (wv as? com.jhaiian.clint.browser.webview.ClintWebView)?.audioState?.muted == true,
-        visibleMenuItems = BrowserMenuCustomizationStore.visibleOrderedItems(prefs)
+                isTabMuted = (wv as? com.jhaiian.clint.browser.webview.ClintWebView)?.audioState?.muted == true,
+        visibleMenuItems = BrowserMenuCustomizationStore.visibleOrderedItems(prefs),
+        isPipEnabled = prefs.getBoolean("pip_enabled", true) // <--- NUEVO
     )
 }
 
