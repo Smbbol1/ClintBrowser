@@ -511,18 +511,16 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-    override fun onStop() {
-        super.onStop()
-        recordBrowsingMode()
-        refreshBackgroundPlaybackVisibility()
-        if (isFinishing && com.jhaiian.clint.privacy.PrivacyPrefs.closesTabsOnExit(prefs)) {
-            Thread { discardSavedTabs() }.start()
-        } else {
-            saveTabs()
-        }
-        if (refreshLinkSession != null) {
-            cleanupRefreshLinkTabs()
-            refreshLinkSession = null
+        override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+
+        // Activar PiP si estamos en pantalla completa, sin importar la página web
+        if (fullscreenView != null) {
+            // Verificar que el dispositivo soporte PiP (Android 8.0+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Entrar en modo Picture-in-Picture
+                enterPictureInPictureMode()
+            }
         }
     }
 
