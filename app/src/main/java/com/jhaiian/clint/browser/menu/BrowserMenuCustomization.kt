@@ -1,6 +1,7 @@
 package com.jhaiian.clint.browser.menu
 
 import android.content.SharedPreferences
+import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ChromeReaderMode
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -61,7 +62,7 @@ fun CustomizableMenuItem.icon(): ImageVector = when (this) {
     CustomizableMenuItem.SHARE -> Icons.Filled.Share
     CustomizableMenuItem.OPEN_IN_APP -> Icons.AutoMirrored.Filled.OpenInNew
     CustomizableMenuItem.CREATE_SHORTCUT -> Icons.AutoMirrored.Filled.AddToHomeScreen
-    CustomizableMenuItem.PICTURE_IN_PICTURE -> Icons.Filled.PictureInPicture
+    CustomizableMenuItem.PICTURE_IN_PICTURE -> Icons.Filled.PictureInPicture 
     CustomizableMenuItem.DOWNLOADS -> Icons.Filled.Download
     CustomizableMenuItem.MEDIA_CAPTURE -> Icons.Filled.VideoLibrary
     CustomizableMenuItem.USER_SCRIPTS -> Icons.Filled.Code
@@ -86,6 +87,7 @@ fun CustomizableMenuItem.titleRes(): Int = when (this) {
     CustomizableMenuItem.SHARE -> R.string.share_url
     CustomizableMenuItem.OPEN_IN_APP -> R.string.menu_open_in_app
     CustomizableMenuItem.CREATE_SHORTCUT -> R.string.menu_create_shortcut
+    CustomizableMenuItem.PICTURE_IN_PICTURE -> R.string.menu_picture_in_picture
     CustomizableMenuItem.DOWNLOADS -> R.string.menu_downloads
     CustomizableMenuItem.MEDIA_CAPTURE -> R.string.menu_media_capture
     CustomizableMenuItem.USER_SCRIPTS -> R.string.user_scripts_title
