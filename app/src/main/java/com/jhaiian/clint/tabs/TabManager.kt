@@ -65,11 +65,24 @@ class TabManager {
         com.jhaiian.clint.profiles.WebProfiles.unregisterTab(tab.id)
     }
 
-    fun switchTo(index: Int) {
+        fun switchTo(index: Int) {
         if (index !in tabs.indices) return
+        
+        // 1. Pausar la pestaña actual (la que vamos a dejar)
+        activeTab?.webView?.let { oldWebView ->
+            oldWebView.onPause()
+            oldWebView.pauseTimers()
+        }
+
         touchActive()
         activeIndex = index
         touchActive()
+
+        // 2. Reanudar la nueva pestaña
+        activeTab?.webView?.let { newWebView ->
+            newWebView.onResume()
+            newWebView.resumeTimers()
+        }
     }
 
     fun effectiveShortcutId(tab: BrowserTab): String? {
