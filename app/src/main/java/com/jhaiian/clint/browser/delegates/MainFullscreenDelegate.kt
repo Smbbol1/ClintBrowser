@@ -11,10 +11,16 @@ internal fun MainActivity.onShowCustomView(view: View, callback: WebChromeClient
     if (fullscreenView != null) { callback.onCustomViewHidden(); return }
     fullscreenCallback = callback
     fullscreenView = view
-    fullscreenContainerView.addView(view, android.view.ViewGroup.LayoutParams(
+    
+    // --- INICIO DEL CAMBIO: Centrar el video en la pantalla vertical ---
+    val params = android.widget.FrameLayout.LayoutParams(
         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-        android.view.ViewGroup.LayoutParams.MATCH_PARENT
-    ))
+        android.view.ViewGroup.LayoutParams.WRAP_CONTENT // <-- Para que no se estire verticalmente
+    )
+    params.gravity = android.view.Gravity.CENTER // <-- Para que se centre en el medio de la pantalla
+    fullscreenContainerView.addView(view, params)
+    // --- FIN DEL CAMBIO ---
+
     uiState.isFullscreen = true
     val ctrl = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
     ctrl.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
@@ -23,21 +29,12 @@ internal fun MainActivity.onShowCustomView(view: View, callback: WebChromeClient
 }
 
 private fun MainActivity.applyFullscreenOrientation(view: View, retry: Boolean) {
-    val webView = tabManager.activeTab?.webView ?: return
-    webView.evaluateJavascript(loadJsAsset("video_dimensions.js")) { result ->
-        if (fullscreenView !== view) return@evaluateJavascript
-        val parts = result?.trim('"')?.split(",")
-        val vw = parts?.getOrNull(0)?.toIntOrNull() ?: 0
-        val vh = parts?.getOrNull(1)?.toIntOrNull() ?: 0
-        if ((vw <= 0 || vh <= 0) && retry) {
-            view.postDelayed({ if (fullscreenView === view) applyFullscreenOrientation(view, retry = false) }, 400)
-            return@evaluateJavascript
-        }
-        requestedOrientation = when {
-            vw > 0 && vh > 0 && vh > vw -> android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-            else -> android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        }
-    }
+    // Forzamos la pantalla a quedarse en vertical (Portrait) sin importar el video.
+    // Esto hará que el video se centre en la pantalla con bandas negras.
+    requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    
+    // (Opcional) Si quieres que el usuario pueda girar el teléfono manualmente,
+    // cambia SCREEN_ORIENTATION_PORTRAIT por SCREEN_ORIENTATION_USER_PORTRAIT
 }
 
 internal fun MainActivity.exitFullscreen() {
