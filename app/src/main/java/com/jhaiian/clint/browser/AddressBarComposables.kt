@@ -168,18 +168,24 @@ internal fun AddressBarRow(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp)
-                                .combinedClickable(
+                                                .combinedClickable(
                     onClick = {
-                        // Mostramos el menú de edición con las opciones
+                        // 1. Copiamos la URL actual automáticamente al portapapeles
+                        val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip = android.content.ClipData.newPlainText("URL", addressBarText)
+                        clipboard.setPrimaryClip(clip)
+
+                        // 2. Mostramos el menú flotante
                         canPaste = activity.clipboardHasText()
                         if (addressBarText.isNotEmpty() || canPaste) {
                             showEditMenu = true
                         }
-                        // También ejecutamos la acción original (abrir teclado) por si acaso
-                        onAddressBarClick() 
+
+                        // 3. Abrimos el teclado (acción original)
+                        onAddressBarClick()
                     },
                     onLongClick = {
-                        // Mantenemos el long press por si el usuario lo usa
+                        // Mantenemos el long press para el menú de edición
                         canPaste = activity.clipboardHasText()
                         if (addressBarText.isNotEmpty() || canPaste) {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -222,7 +228,7 @@ internal fun AddressBarRow(
                     }
                 )
         ) {
-            if (showEditMenu) {
+                        if (showEditMenu) {
                 AddressBarEditMenu(
                     above = isBottomBar,
                     showCopy = addressBarText.isNotEmpty(),
@@ -239,6 +245,24 @@ internal fun AddressBarRow(
                         showEditMenu = false
                         activity.pasteAndGo(isBottomBar)
                     },
+                    // --- NUEVAS ACCIONES ---
+                    onSelectAll = {
+                        // Seleccionar todo: copiamos al portapapeles y avisamos
+                        val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip = android.content.ClipData.newPlainText("URL", addressBarText)
+                        clipboard.setPrimaryClip(clip)
+                        android.widget.Toast.makeText(activity, "Dirección copiada al portapapeles", android.widget.Toast.LENGTH_SHORT).show()
+                        showEditMenu = false
+                    },
+                    onCut = {
+                        // Cortar: copiamos al portapapeles
+                        val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip = android.content.ClipData.newPlainText("URL", addressBarText)
+                        clipboard.setPrimaryClip(clip)
+                        android.widget.Toast.makeText(activity, "Dirección copiada al portapapeles", android.widget.Toast.LENGTH_SHORT).show()
+                        showEditMenu = false
+                    },
+                    // ----------------------
                     onDismiss = { showEditMenu = false }
                 )
             }
@@ -431,7 +455,10 @@ private fun AddressBarEditMenu(
     onCopy: () -> Unit,
     onPaste: () -> Unit,
     onPasteAndGo: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    // Añadimos las nuevas acciones
+    onSelectAll: () -> Unit,
+    onCut: () -> Unit
 ) {
     val colors = LocalClintColors.current
     val density = LocalDensity.current
@@ -458,7 +485,12 @@ private fun AddressBarEditMenu(
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 4.dp, vertical = 2.dp)
             ) {
-                if (showCopy) AddressBarEditMenuAction(stringResource(R.string.action_copy), onCopy)
+                // --- NUEVOS BOTONES ---
+                AddressBarEditMenuAction("Seleccionar todo", onSelectAll)
+                if (showCopy) {
+                    AddressBarEditMenuAction(stringResource(R.string.action_copy), onCopy)
+                    AddressBarEditMenuAction("Cortar", onCut)
+                }
                 if (showPaste) {
                     AddressBarEditMenuAction(stringResource(R.string.address_bar_paste), onPaste)
                     AddressBarEditMenuAction(stringResource(R.string.address_bar_paste_and_go), onPasteAndGo)
