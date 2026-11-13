@@ -126,7 +126,8 @@ internal data class BrowserMenuSnapshot(
     val isPageTranslated: Boolean,
     val canToggleTabMute: Boolean,
     val isTabMuted: Boolean,
-    val visibleMenuItems: List<CustomizableMenuItem>
+    val visibleMenuItems: List<CustomizableMenuItem>,
+    val isPipEnabled: Boolean
 )
 
 internal class BrowserMenuActions(
