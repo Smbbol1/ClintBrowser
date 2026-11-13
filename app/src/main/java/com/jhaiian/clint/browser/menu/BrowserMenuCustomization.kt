@@ -31,6 +31,7 @@ enum class CustomizableMenuItem(val id: String) {
     SHARE("share"),
     OPEN_IN_APP("open_in_app"),
     CREATE_SHORTCUT("create_shortcut"),
+    PICTURE_IN_PICTURE("picture_in_picture"), // <--- NUEVO
     DOWNLOADS("downloads"),
     MEDIA_CAPTURE("media_capture"),
     USER_SCRIPTS("userscripts"),
