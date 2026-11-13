@@ -168,9 +168,18 @@ internal fun AddressBarRow(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp)
-                .combinedClickable(
-                    onClick = onAddressBarClick,
+                                .combinedClickable(
+                    onClick = {
+                        // Mostramos el menú de edición con las opciones
+                        canPaste = activity.clipboardHasText()
+                        if (addressBarText.isNotEmpty() || canPaste) {
+                            showEditMenu = true
+                        }
+                        // También ejecutamos la acción original (abrir teclado) por si acaso
+                        onAddressBarClick() 
+                    },
                     onLongClick = {
+                        // Mantenemos el long press por si el usuario lo usa
                         canPaste = activity.clipboardHasText()
                         if (addressBarText.isNotEmpty() || canPaste) {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
