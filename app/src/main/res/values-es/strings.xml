@@ -2384,4 +2384,5 @@
     <string name="address_bar_link_copied">Enlace de la página copiado</string>
     <string name="address_bar_paste">Pegar</string>
     <string name="address_bar_paste_and_go">Pegar e ir</string>
+    <string name="menu_picture_in_picture">Imagen en imagen</string>
 </resources>
