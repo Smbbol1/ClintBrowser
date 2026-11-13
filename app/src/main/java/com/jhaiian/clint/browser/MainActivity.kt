@@ -511,7 +511,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-                    override fun onUserLeaveHint() {
+                        override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
         // 1. Leemos el estado del interruptor (por defecto true)
@@ -523,6 +523,22 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Entrar en modo Picture-in-Picture
                 enterPictureInPictureMode()
+            }
+        }
+    }
+
+    // --- NUEVO: Función para activar el PiP desde el toque largo en el video ---
+    @android.webkit.JavascriptInterface
+    fun requestPictureInPictureFromWeb() {
+        runOnUiThread {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Forzamos la entrada a PiP
+                if (fullscreenView != null) {
+                    enterPictureInPictureMode()
+                } else {
+                    val params = android.app.PictureInPictureParams.Builder().build()
+                    enterPictureInPictureMode(params)
+                }
             }
         }
     }
