@@ -168,7 +168,8 @@ internal class BrowserMenuActions(
     val onToggleTabMute: () -> Unit,
     val onCookiesControl: () -> Unit,
     val onTranslate: () -> Unit,
-    val onOpenTranslationSettings: () -> Unit
+    val onOpenTranslationSettings: () -> Unit,
+    val onTogglePip: () -> Unit
 )
 
 internal fun MainActivity.buildMenuSnapshot(previous: BrowserMenuSnapshot?): BrowserMenuSnapshot {
