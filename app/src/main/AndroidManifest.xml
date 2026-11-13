@@ -71,7 +71,7 @@
             android:configChanges="uiMode|screenSize|smallestScreenSize|screenLayout|orientation"
             android:windowSoftInputMode="stateHidden" />
 
-                <activity
+                        <activity
             android:name=".browser.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
