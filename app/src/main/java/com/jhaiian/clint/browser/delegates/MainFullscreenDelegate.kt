@@ -54,6 +54,20 @@ internal fun MainActivity.exitFullscreen() {
     val ctrl = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
     ctrl.show(WindowInsetsCompat.Type.navigationBars())
     applySystemUiVisibility()
+    
+    // --- NUEVO: Recuperar el foco del WebView para que vuelva a responder a los toques ---
+    tabManager.activeTab?.webView?.let { webView ->
+        webView.requestFocus()
+        webView.onResume()
+        webView.resumeTimers()
+        // Forzamos un pequeño refresco para que la página vuelva a ser interactiva
+        webView.postDelayed({
+            webView.clearFocus()
+            webView.requestFocus()
+        }, 100)
+    }
+    // ---------------------------------------------------------------------------------
+
     window.decorView.post {
         requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         uiState.topBarFullHeightPx = 0
