@@ -61,6 +61,7 @@ fun CustomizableMenuItem.icon(): ImageVector = when (this) {
     CustomizableMenuItem.SHARE -> Icons.Filled.Share
     CustomizableMenuItem.OPEN_IN_APP -> Icons.AutoMirrored.Filled.OpenInNew
     CustomizableMenuItem.CREATE_SHORTCUT -> Icons.AutoMirrored.Filled.AddToHomeScreen
+    CustomizableMenuItem.PICTURE_IN_PICTURE -> Icons.Filled.PictureInPicture
     CustomizableMenuItem.DOWNLOADS -> Icons.Filled.Download
     CustomizableMenuItem.MEDIA_CAPTURE -> Icons.Filled.VideoLibrary
     CustomizableMenuItem.USER_SCRIPTS -> Icons.Filled.Code
