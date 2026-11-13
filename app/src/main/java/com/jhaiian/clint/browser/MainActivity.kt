@@ -511,11 +511,14 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-        override fun onUserLeaveHint() {
+            override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
-        // Activar PiP si estamos en pantalla completa, sin importar la página web
-        if (fullscreenView != null) {
+        // 1. Leemos el estado del interruptor (por defecto true)
+        val pipEnabled = prefs.getBoolean("pip_enabled", true)
+
+        // 2. Solo activamos el PiP si el interruptor está ON y estamos en pantalla completa
+        if (pipEnabled && fullscreenView != null) {
             // Verificar que el dispositivo soporte PiP (Android 8.0+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Entrar en modo Picture-in-Picture
