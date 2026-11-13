@@ -511,7 +511,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-                override fun onUserLeaveHint() {
+                    override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
         // 1. Leemos el estado del interruptor (por defecto true)
@@ -521,24 +521,8 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (pipEnabled && fullscreenView != null) {
             // Verificar que el dispositivo soporte PiP (Android 8.0+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                
-                // --- NUEVO: Calcular la proporción del video ---
-                val videoView = fullscreenView
-                if (videoView != null && videoView.width > 0 && videoView.height > 0) {
-                    // Creamos la proporción exacta del video
-                    val aspectRatio = android.util.Rational(videoView.width, videoView.height)
-                    
-                    // Le decimos a Android que use esa proporción para la ventana del PiP
-                    val params = android.app.PictureInPictureParams.Builder()
-                        .setAspectRatio(aspectRatio)
-                        .build()
-                    
-                    enterPictureInPictureMode(params)
-                } else {
-                    // Si por alguna razón no se puede calcular, entrar normal
-                    enterPictureInPictureMode()
-                }
-                // ---------------------------------------------
+                // Entrar en modo Picture-in-Picture
+                enterPictureInPictureMode()
             }
         }
     }
