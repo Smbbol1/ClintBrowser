@@ -463,6 +463,12 @@ private fun MenuItemRowFor(item: CustomizableMenuItem, snapshot: BrowserMenuSnap
             onClick = actions.onDownloads,
             onLongClick = actions.onOpenDownloadSettings
         )
+                CustomizableMenuItem.PICTURE_IN_PICTURE -> MenuItemRow(
+            item.icon(),
+            stringResource(item.titleRes()),
+            checked = snapshot.isPipEnabled,
+            onClick = actions.onTogglePip
+        )
         CustomizableMenuItem.MEDIA_CAPTURE -> MenuItemRow(
             item.icon(),
             stringResource(item.titleRes()),
