@@ -463,12 +463,50 @@ private fun MenuItemRowFor(item: CustomizableMenuItem, snapshot: BrowserMenuSnap
             onClick = actions.onDownloads,
             onLongClick = actions.onOpenDownloadSettings
         )
-                CustomizableMenuItem.PICTURE_IN_PICTURE -> MenuItemRow(
-            item.icon(),
-            stringResource(item.titleRes()),
-            checked = snapshot.isPipEnabled,
-            onClick = actions.onTogglePip
-        )
+                        CustomizableMenuItem.PICTURE_IN_PICTURE -> {
+            // 1. Obtenemos los colores del tema
+            val colors = LocalClintColors.current
+            
+            // 2. Dibujamos la fila con el Switch
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                // Icono
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(colors.primary.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = item.icon(),
+                        contentDescription = null,
+                        tint = colors.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                
+                // Texto
+                Text(
+                    text = stringResource(item.titleRes()),
+                    color = colors.popupText,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f).padding(start = 14.dp)
+                )
+                
+                // Switch (El botón de encendido/apagado)
+                androidx.compose.material3.Switch(
+                    checked = snapshot.isPipEnabled,
+                    onCheckedChange = { actions.onTogglePip() }
+                )
+            }
+        }
         CustomizableMenuItem.MEDIA_CAPTURE -> MenuItemRow(
             item.icon(),
             stringResource(item.titleRes()),
