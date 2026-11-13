@@ -278,8 +278,13 @@ internal fun MainActivity.buildMenuActions(dismiss: () -> Unit): BrowserMenuActi
     onOpenWebsiteBlockerSettings = { dismiss(); onMenuOpenWebsiteBlockerSettings() },
     onToggleTabMute = { dismiss(); onMenuToggleTabMute() },
     onCookiesControl = { dismiss(); onMenuCookiesControl() },
-    onTranslate = { dismiss(); onMenuTranslate() },
-    onOpenTranslationSettings = { dismiss(); onMenuOpenTranslationSettings() }
+        onTranslate = { dismiss(); onMenuTranslate() },
+    onOpenTranslationSettings = { dismiss(); onMenuOpenTranslationSettings() },
+    onTogglePip = {
+        val current = prefs.getBoolean("pip_enabled", true)
+        prefs.edit().putBoolean("pip_enabled", !current).apply()
+        // Importante: NO cerramos el menú (no llamamos a dismiss()) para que el usuario vea cómo cambia el check
+    }
 )
 
 @Composable
