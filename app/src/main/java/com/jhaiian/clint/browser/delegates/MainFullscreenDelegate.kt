@@ -31,7 +31,7 @@ internal fun MainActivity.onShowCustomView(view: View, callback: WebChromeClient
 private fun MainActivity.applyFullscreenOrientation(view: View, retry: Boolean) {
     // Forzamos la pantalla a quedarse en vertical (Portrait) sin importar el video.
     // Esto hará que el video se centre en la pantalla con bandas negras.
-    requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
     
     // (Opcional) Si quieres que el usuario pueda girar el teléfono manualmente,
     // cambia SCREEN_ORIENTATION_PORTRAIT por SCREEN_ORIENTATION_USER_PORTRAIT
