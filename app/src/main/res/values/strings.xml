@@ -2379,4 +2379,5 @@
     <string name="address_bar_link_copied">Page link copied</string>
     <string name="address_bar_paste">Paste</string>
     <string name="address_bar_paste_and_go">Paste &amp; Go</string>
+    <string name="menu_picture_in_picture">Picture-in-Picture</string>
 </resources>
