@@ -132,7 +132,7 @@ class ClintWebViewClient(
         if (isActive()) onPageStartedCallback(url)
     }
 
-        override fun onPageFinished(view: WebView, url: String) {
+            override fun onPageFinished(view: WebView, url: String) {
         if (url.startsWith("https://", ignoreCase = true)) Uri.parse(url).host?.lowercase()?.let { upgradedHostOrigins.remove(it) }
         super.onPageFinished(view, url)
         cachedPageUrl = url
@@ -148,11 +148,10 @@ class ClintWebViewClient(
         }
         // ----------------------------------------------
 
-                // --- NUEVO: Detectar si hay un video reproduciéndose para mostrar el botón flotante ---
+        // --- NUEVO: Detectar video y activar PiP nativo ---
         view.addJavascriptInterface(object {
             @android.webkit.JavascriptInterface
             fun onVideoStateChanged(isPlaying: Boolean) {
-                // Avisamos a la app si hay un video reproduciéndose
                 (view.context as? com.jhaiian.clint.browser.MainActivity)?.onVideoPlayingChanged(isPlaying)
             }
         }, "ClintVideoBridge")
@@ -162,8 +161,7 @@ class ClintWebViewClient(
                 if (window._clintVideoInjected) return;
                 window._clintVideoInjected = true;
                 
-                // Revisamos cada segundo si hay un video reproduciéndose
-                setInterval(function() {
+                function checkVideo() {
                     var videos = document.querySelectorAll('video');
                     var isPlaying = false;
                     for (var i = 0; i < videos.length; i++) {
@@ -175,11 +173,20 @@ class ClintWebViewClient(
                     if (window.ClintVideoBridge) {
                         window.ClintVideoBridge.onVideoStateChanged(isPlaying);
                     }
-                }, 1000);
+                }
+                
+                // Revisamos cada segundo
+                setInterval(checkVideo, 1000);
+                
+                // Observamos cambios en el DOM (para detectar videos que aparecen dinámicamente)
+                var observer = new MutationObserver(function(mutations) {
+                    checkVideo();
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
             })();
         """.trimIndent()
         view.evaluateJavascript(js, null)
-        // ----------------------
+        // -------------------------------------------------------------
 
         if (isActive()) onPageFinishedCallback(url) else view.evaluateJavascript(TabMediaControl.PAUSE_SCRIPT, null)
     }
