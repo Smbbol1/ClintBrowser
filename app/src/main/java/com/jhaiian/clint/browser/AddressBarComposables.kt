@@ -168,15 +168,24 @@ internal fun AddressBarRow(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp)
-                         .combinedClickable(
+                                         .combinedClickable(
                     onClick = {
                         // 1. Copiamos la URL actual automáticamente al portapapeles
                         val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         val clip = android.content.ClipData.newPlainText("URL", addressBarText)
                         clipboard.setPrimaryClip(clip)
 
-                        // 2. Abrimos el teclado (esto también selecciona el texto)
+                        // 2. Abrimos el teclado y forzamos la selección de todo el texto
                         onAddressBarClick()
+                        
+                        // TRUCO: Le decimos al sistema que seleccione todo justo después de abrir el teclado
+                        activity.window.decorView.postDelayed({
+                            activity.currentFocus?.let { focusedView ->
+                                if (focusedView is android.widget.EditText) {
+                                    focusedView.setSelection(0, focusedView.text.length)
+                                }
+                            }
+                        }, 100)
 
                         // 3. Mostramos el menú flotante después de abrir el teclado
                         canPaste = activity.clipboardHasText()
