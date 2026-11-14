@@ -399,15 +399,24 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
             )
         }
 
-        // --- NUEVO: Botón flotante para activar el PiP cuando hay video ---
+                // --- NUEVO: Botón flotante arrastrable para activar el PiP ---
         if (activity.isVideoPlaying && !state.isFullscreen) {
+            // Estado para la posición del botón (arrastrable)
+            var buttonOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+            
             androidx.compose.material3.IconButton(
                 onClick = {
                     activity.requestPictureInPictureFromWeb()
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = with(density) { state.contentPaddingBottomPx.toDp() } + 16.dp)
+                    .offset { androidx.compose.ui.unit.IntOffset(buttonOffset.x.roundToInt(), buttonOffset.y.roundToInt()) }
+                    .draggable2D(
+                        state = androidx.compose.foundation.gestures.rememberDraggable2DState { delta ->
+                            buttonOffset += delta
+                        }
+                    )
+                    .padding(16.dp)
                     .background(
                         color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                         shape = androidx.compose.foundation.shape.CircleShape
