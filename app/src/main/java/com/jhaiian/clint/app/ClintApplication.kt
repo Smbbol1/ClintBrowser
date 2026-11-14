@@ -24,19 +24,26 @@ class ClintApplication : Application() {
         override fun onCreate() {
         super.onCreate()
         
-                // --- NUEVO: Arranque asíncrono del WebView (Prepara Chromium en segundo plano) ---
+                                // --- NUEVO: Arranque asíncrono del WebView (Prepara Chromium en segundo plano) ---
         if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.START_SAFE_BROWSING)) {
-            val config = androidx.webkit.WebViewStartUpConfig.Builder { }
-                .build()
+            // 1. Creamos la configuración con un hilo de fondo para las tareas de inicio
+            val config = androidx.webkit.WebViewStartUpConfig.Builder(
+                java.util.concurrent.Executors.newSingleThreadExecutor()
+            ).build()
+            
+            // 2. Iniciamos el WebView de forma asíncrona
             androidx.webkit.WebViewCompat.startUpWebView(
                 this,
                 config,
-                object : androidx.webkit.WebViewCompat.WebViewStartUpCallback {
-                    override fun onSuccess(startupResult: androidx.webkit.WebViewStartUpResult) {
-                        // El WebView se ha inicializado correctamente
+                object : androidx.webkit.WebViewOutcomeReceiver<
+                    androidx.webkit.WebViewStartUpResult, 
+                    androidx.webkit.WebViewStartupException
+                > {
+                    override fun onResult(result: androidx.webkit.WebViewStartUpResult) {
+                        // El WebView se ha inicializado correctamente en segundo plano
                     }
-                    override fun onFailure(exception: androidx.webkit.WebViewStartupException) {
-                        // Error al inicializar (no crítico)
+                    override fun onError(error: androidx.webkit.WebViewStartupException) {
+                        // Error al inicializar (no crítico, el WebView se inicializará cuando se use)
                     }
                 }
             )
