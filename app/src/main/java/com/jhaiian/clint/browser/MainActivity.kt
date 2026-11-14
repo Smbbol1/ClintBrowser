@@ -1395,11 +1395,27 @@ td,th{border:1px solid $secondaryColor;padding:6px 8px;}
         uiState.contentPreviewRequest = null
     }
 
-    private fun getUrlFromIntent(intent: android.content.Intent?): String? {
+        private fun getUrlFromIntent(intent: android.content.Intent?): String? {
         if (intent == null) return null
         return when (intent.action) {
             android.content.Intent.ACTION_SEND -> intent.getStringExtra(android.content.Intent.EXTRA_TEXT)
             else -> intent.data?.toString()
+        }
+    }
+
+    // --- NUEVO: Guardar el estado de las pestañas antes de que Android las destruya por falta de RAM ---
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // Si el sistema necesita memoria, guardamos el estado de todas las pestañas
+        // para que al volver a la app, las conversaciones y formularios sigan ahí
+        if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            tabManager.tabs.forEach { tab ->
+                if (tab.savedState == null) {
+                    val bundle = android.os.Bundle()
+                    tab.webView.saveState(bundle)
+                    tab.savedState = bundle
+                }
+            }
         }
     }
 }
