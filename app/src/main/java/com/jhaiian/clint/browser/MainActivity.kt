@@ -518,19 +518,21 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-                            override fun onUserLeaveHint() {
+                                override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
         val pipEnabled = prefs.getBoolean("pip_enabled", true)
 
         if (pipEnabled && fullscreenView != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Calculamos la proporción del video real para que el PiP se ajuste
                 val videoView = fullscreenView
                 if (videoView != null && videoView.width > 0 && videoView.height > 0) {
                     val aspectRatio = android.util.Rational(videoView.width, videoView.height)
+                    // Le decimos a Android que la ventana del PiP sea exactamente el área del video
+                    val sourceRect = android.graphics.Rect(0, 0, videoView.width, videoView.height)
                     val params = android.app.PictureInPictureParams.Builder()
                         .setAspectRatio(aspectRatio)
+                        .setSourceRectHint(sourceRect)
                         .build()
                     enterPictureInPictureMode(params)
                 } else {
@@ -540,25 +542,22 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-            // --- NUEVO: Función para activar el PiP calculando el tamaño del video ---
+                // --- NUEVO: Función para activar el PiP calculando el tamaño del video ---
     @android.webkit.JavascriptInterface
     fun requestPictureInPictureFromWeb() {
         runOnUiThread {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Obtenemos el tamaño real del video que está en pantalla completa
                 val videoView = fullscreenView
                 if (videoView != null && videoView.width > 0 && videoView.height > 0) {
-                    // Creamos la proporción exacta del video (ancho x alto)
                     val aspectRatio = android.util.Rational(videoView.width, videoView.height)
-                    
-                    // Le decimos a Android que use esa proporción para la ventana del PiP
+                    // Le decimos a Android que la ventana del PiP sea exactamente el área del video
+                    val sourceRect = android.graphics.Rect(0, 0, videoView.width, videoView.height)
                     val params = android.app.PictureInPictureParams.Builder()
                         .setAspectRatio(aspectRatio)
+                        .setSourceRectHint(sourceRect)
                         .build()
-                    
                     enterPictureInPictureMode(params)
                 } else {
-                    // Si no hay un video maximizado o no se puede medir, entramos normal
                     enterPictureInPictureMode()
                 }
             }
