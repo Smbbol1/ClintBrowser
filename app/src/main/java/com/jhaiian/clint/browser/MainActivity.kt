@@ -534,7 +534,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-    // --- NUEVO: Función para activar el PiP desde el toque largo en el video ---
+        // --- NUEVO: Función para activar el PiP desde el toque largo en el video ---
     @android.webkit.JavascriptInterface
     fun requestPictureInPictureFromWeb() {
         runOnUiThread {
@@ -547,6 +547,14 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
                     enterPictureInPictureMode(params)
                 }
             }
+        }
+    }
+
+    // --- NUEVO: Función que recibe el aviso de JavaScript (si hay video reproduciéndose) ---
+    @android.webkit.JavascriptInterface
+    fun onVideoPlayingChanged(isPlaying: Boolean) {
+        runOnUiThread {
+            isVideoPlaying = isPlaying
         }
     }
 
