@@ -148,51 +148,38 @@ class ClintWebViewClient(
         }
         // ----------------------------------------------
 
-        // --- NUEVO: Configurar el toque largo (1 segundo) para activar el PiP ---
+                // --- NUEVO: Detectar si hay un video reproduciéndose para mostrar el botón flotante ---
         view.addJavascriptInterface(object {
             @android.webkit.JavascriptInterface
-            fun onVideoLongPressed() {
-                (view.context as? com.jhaiian.clint.browser.MainActivity)?.requestPictureInPictureFromWeb()
+            fun onVideoStateChanged(isPlaying: Boolean) {
+                // Avisamos a la app si hay un video reproduciéndose
+                (view.context as? com.jhaiian.clint.browser.MainActivity)?.onVideoPlayingChanged(isPlaying)
             }
-        }, "ClintPipBridge")
+        }, "ClintVideoBridge")
         
         val js = """
             (function() {
-                if (window._clintPipInjected) return;
-                window._clintPipInjected = true;
+                if (window._clintVideoInjected) return;
+                window._clintVideoInjected = true;
                 
-                var pressTimer;
-                
-                // Detectamos cuando el usuario presiona el video
-                document.addEventListener('touchstart', function(e) {
-                    var target = e.target;
-                    if (target.tagName === 'VIDEO' || target.closest('video') || target.closest('.html5-video-player')) {
-                        // Iniciamos un temporizador de 1 segundo (1000 ms)
-                        pressTimer = setTimeout(function() {
-                            if (window.ClintPipBridge) {
-                                window.ClintPipBridge.onVideoLongPressed();
-                            }
-                        }, 1000);
+                // Revisamos cada segundo si hay un video reproduciéndose
+                setInterval(function() {
+                    var videos = document.querySelectorAll('video');
+                    var isPlaying = false;
+                    for (var i = 0; i < videos.length; i++) {
+                        if (!videos[i].paused && !videos[i].ended) {
+                            isPlaying = true;
+                            break;
+                        }
                     }
-                }, true);
-                
-                // Si el usuario suelta antes de 1 segundo, cancelamos el temporizador
-                document.addEventListener('touchend', function(e) {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer);
+                    if (window.ClintVideoBridge) {
+                        window.ClintVideoBridge.onVideoStateChanged(isPlaying);
                     }
-                }, true);
-                
-                // También cancelamos si mueve el dedo (scroll)
-                document.addEventListener('touchmove', function(e) {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer);
-                    }
-                }, true);
+                }, 1000);
             })();
         """.trimIndent()
         view.evaluateJavascript(js, null)
-        // ------------------------------------------------------------------------
+        // ----------------------
 
         if (isActive()) onPageFinishedCallback(url) else view.evaluateJavascript(TabMediaControl.PAUSE_SCRIPT, null)
     }
