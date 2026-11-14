@@ -534,17 +534,26 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-        // --- NUEVO: Función para activar el PiP desde el toque largo en el video ---
+            // --- NUEVO: Función para activar el PiP calculando el tamaño del video ---
     @android.webkit.JavascriptInterface
     fun requestPictureInPictureFromWeb() {
         runOnUiThread {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Forzamos la entrada a PiP
-                if (fullscreenView != null) {
-                    enterPictureInPictureMode()
-                } else {
-                    val params = android.app.PictureInPictureParams.Builder().build()
+                // Obtenemos el tamaño real del video que está en pantalla completa
+                val videoView = fullscreenView
+                if (videoView != null && videoView.width > 0 && videoView.height > 0) {
+                    // Creamos la proporción exacta del video (ancho x alto)
+                    val aspectRatio = android.util.Rational(videoView.width, videoView.height)
+                    
+                    // Le decimos a Android que use esa proporción para la ventana del PiP
+                    val params = android.app.PictureInPictureParams.Builder()
+                        .setAspectRatio(aspectRatio)
+                        .build()
+                    
                     enterPictureInPictureMode(params)
+                } else {
+                    // Si no hay un video maximizado o no se puede medir, entramos normal
+                    enterPictureInPictureMode()
                 }
             }
         }
