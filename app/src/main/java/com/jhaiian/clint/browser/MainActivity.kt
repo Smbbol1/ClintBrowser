@@ -117,8 +117,15 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
     private var swipeGuardInitX = 0f
     private var swipeGuardInitY = 0f
 
-    internal var fullscreenView: View? = null
+        internal var fullscreenView: View? = null
     internal var fullscreenCallback: WebChromeClient.CustomViewCallback? = null
+
+    // --- NUEVO: Variable para saber si hay un video reproduciéndose ---
+    internal var isVideoPlaying: Boolean = false
+        set(value) {
+            field = value
+            uiState.videoPlayingRevision++ // Fuerza a Compose a redibujar
+        }
 
     internal var suggestionFetcher: SuggestionFetcher? = null
     internal var suggestionsBgThread: android.os.HandlerThread? = null
