@@ -21,8 +21,15 @@ class ClintApplication : Application() {
         super.attachBaseContext(LocaleHelper.wrapContext(base))
     }
 
-    override fun onCreate() {
+        override fun onCreate() {
         super.onCreate()
+        
+        // --- NUEVO: Arranque asíncrono del WebView (Prepara Chromium en segundo plano) ---
+        if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.START_SAFE_BROWSING)) {
+            androidx.webkit.WebViewCompat.startUpWebView(this)
+        }
+        // ----------------------------------------------------------------------------
+        
         applyNightMode()
         SystemDarkState.install(this)
         loadMeasurementSystemPreference(this)
