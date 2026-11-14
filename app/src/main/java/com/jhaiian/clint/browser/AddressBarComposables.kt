@@ -127,11 +127,26 @@ internal fun AddressBarRow(
     val openTabsFlingPx = with(density) { 600.dp.toPx() }
     val maxVerticalNudgePx = with(density) { 10.dp.toPx() }
     val verticalDragState = rememberDraggableState { delta -> verticalDrag += delta }
-    LaunchedEffect(addressBarText) {
+        LaunchedEffect(addressBarText) {
         if (swipeDirection != 0) {
             kotlinx.coroutines.delay(240)
             swipeDirection = 0
         }
+        
+        // --- NUEVO: Preconexión de red (Speculative Loading) ---
+        // Si el usuario está escribiendo un dominio (ej. youtube.com), adelantamos la conexión
+        if (addressBarText.contains(".") && !addressBarText.contains(" ")) {
+            val url = if (addressBarText.startsWith("http")) addressBarText else "https://$addressBarText"
+            activity.tabManager.activeTab?.webView?.let { webView ->
+                // Usamos el Profile del WebView para preconectar (DNS + TLS en segundo plano)
+                if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.PROFILE_URL_INTERCEPTION)) {
+                    runCatching {
+                        androidx.webkit.WebViewCompat.getProfile(webView)?.preconnect(url)
+                    }
+                }
+            }
+        }
+        // ------------------------------------------------------
     }
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
