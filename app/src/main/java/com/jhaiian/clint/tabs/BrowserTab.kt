@@ -17,7 +17,7 @@ data class BrowserTab(
     val profileId: String = WebProfiles.DEFAULT_ID,
     var groupId: String? = null,
         // Variable para guardar el estado del WebView (historial, scroll, formularios)
-    var savedState: android.os.Bundle? = null
+    var savedState: android.os.Bundle? = null,
     val webView: WebView
 ) {
     var lastActiveAt: Long = System.currentTimeMillis()
