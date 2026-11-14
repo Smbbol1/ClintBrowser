@@ -518,18 +518,24 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         if (hasFocus) applySystemUiVisibility()
     }
 
-                        override fun onUserLeaveHint() {
+                            override fun onUserLeaveHint() {
         super.onUserLeaveHint()
 
-        // 1. Leemos el estado del interruptor (por defecto true)
         val pipEnabled = prefs.getBoolean("pip_enabled", true)
 
-        // 2. Solo activamos el PiP si el interruptor está ON y estamos en pantalla completa
         if (pipEnabled && fullscreenView != null) {
-            // Verificar que el dispositivo soporte PiP (Android 8.0+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Entrar en modo Picture-in-Picture
-                enterPictureInPictureMode()
+                // Calculamos la proporción del video real para que el PiP se ajuste
+                val videoView = fullscreenView
+                if (videoView != null && videoView.width > 0 && videoView.height > 0) {
+                    val aspectRatio = android.util.Rational(videoView.width, videoView.height)
+                    val params = android.app.PictureInPictureParams.Builder()
+                        .setAspectRatio(aspectRatio)
+                        .build()
+                    enterPictureInPictureMode(params)
+                } else {
+                    enterPictureInPictureMode()
+                }
             }
         }
     }
