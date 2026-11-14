@@ -401,15 +401,13 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
             )
         }
 
-                // --- NUEVO: Botón flotante arrastrable para activar el PiP ---
+                        // --- NUEVO: Botón flotante arrastrable para activar el PiP ---
         if (activity.isVideoPlaying && !state.isFullscreen) {
             // Estado para la posición del botón (arrastrable)
             var buttonOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
             
-            androidx.compose.material3.IconButton(
-                onClick = {
-                    activity.requestPictureInPictureFromWeb()
-                },
+            // Usamos un Box para que el área de arrastre coincida con el botón
+            Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .offset { androidx.compose.ui.unit.IntOffset(buttonOffset.x.roundToInt(), buttonOffset.y.roundToInt()) }
@@ -418,18 +416,25 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
                             buttonOffset += delta
                         }
                     )
-                    .padding(16.dp)
-                    .background(
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        shape = androidx.compose.foundation.shape.CircleShape
-                    )
-                    .size(56.dp)
             ) {
-                androidx.compose.material3.Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Filled.PictureInPicture,
-                    contentDescription = "Activar Picture-in-Picture",
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
-                )
+                androidx.compose.material3.IconButton(
+                    onClick = {
+                        activity.requestPictureInPictureFromWeb()
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(
+                            color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .size(56.dp)
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Filled.PictureInPicture,
+                        contentDescription = "Activar Picture-in-Picture",
+                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
         // ----------------------------------------------------
