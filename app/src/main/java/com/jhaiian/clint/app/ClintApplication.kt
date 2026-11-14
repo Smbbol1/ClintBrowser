@@ -24,9 +24,22 @@ class ClintApplication : Application() {
         override fun onCreate() {
         super.onCreate()
         
-        // --- NUEVO: Arranque asíncrono del WebView (Prepara Chromium en segundo plano) ---
+                // --- NUEVO: Arranque asíncrono del WebView (Prepara Chromium en segundo plano) ---
         if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.START_SAFE_BROWSING)) {
-            androidx.webkit.WebViewCompat.startUpWebView(this)
+            val config = androidx.webkit.WebViewStartUpConfig.Builder { }
+                .build()
+            androidx.webkit.WebViewCompat.startUpWebView(
+                this,
+                config,
+                object : androidx.webkit.WebViewCompat.WebViewStartUpCallback {
+                    override fun onSuccess(startupResult: androidx.webkit.WebViewStartUpResult) {
+                        // El WebView se ha inicializado correctamente
+                    }
+                    override fun onFailure(exception: androidx.webkit.WebViewStartupException) {
+                        // Error al inicializar (no crítico)
+                    }
+                }
+            )
         }
         // ----------------------------------------------------------------------------
         
