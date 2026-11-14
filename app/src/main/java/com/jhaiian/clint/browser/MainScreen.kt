@@ -1,4 +1,6 @@
 package com.jhaiian.clint.browser
+import androidx.compose.foundation.layout.offset
+import kotlin.math.roundToInt
 import com.jhaiian.clint.browser.home.ClintHomeScreen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
