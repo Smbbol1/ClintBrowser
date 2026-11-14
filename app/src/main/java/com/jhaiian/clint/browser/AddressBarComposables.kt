@@ -168,24 +168,23 @@ internal fun AddressBarRow(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp)
-                                                .combinedClickable(
+                         .combinedClickable(
                     onClick = {
                         // 1. Copiamos la URL actual automáticamente al portapapeles
                         val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         val clip = android.content.ClipData.newPlainText("URL", addressBarText)
                         clipboard.setPrimaryClip(clip)
 
-                        // 2. Mostramos el menú flotante
+                        // 2. Abrimos el teclado (esto también selecciona el texto)
+                        onAddressBarClick()
+
+                        // 3. Mostramos el menú flotante después de abrir el teclado
                         canPaste = activity.clipboardHasText()
                         if (addressBarText.isNotEmpty() || canPaste) {
                             showEditMenu = true
                         }
-
-                        // 3. Abrimos el teclado (acción original)
-                        onAddressBarClick()
                     },
                     onLongClick = {
-                        // Mantenemos el long press para el menú de edición
                         canPaste = activity.clipboardHasText()
                         if (addressBarText.isNotEmpty() || canPaste) {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -467,10 +466,10 @@ private fun AddressBarEditMenu(
             AddressBarEditMenuPositionProvider(above, 6.dp.roundToPx(), 16.dp.roundToPx())
         }
     }
-    Popup(
+        Popup(
         popupPositionProvider = positionProvider,
         onDismissRequest = onDismiss,
-        properties = PopupProperties(focusable = true)
+        properties = PopupProperties(focusable = false)
     ) {
         Surface(
             color = colors.popupBackground,
