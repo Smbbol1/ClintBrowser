@@ -65,11 +65,17 @@ class TabManager {
         com.jhaiian.clint.profiles.WebProfiles.unregisterTab(tab.id)
     }
 
-        fun switchTo(index: Int) {
+            fun switchTo(index: Int) {
         if (index !in tabs.indices) return
         
-        // 1. Pausar la pestaña actual (la que vamos a dejar)
+        // 1. Pausar la pestaña actual y guardar su estado
         activeTab?.webView?.let { oldWebView ->
+            // Guardamos el estado de la página (historial, scroll, formularios)
+            val bundle = android.os.Bundle()
+            oldWebView.saveState(bundle)
+            // Lo guardamos en la pestaña para restaurarlo luego
+            activeTab?.savedState = bundle
+            
             oldWebView.onPause()
             oldWebView.pauseTimers()
         }
@@ -78,13 +84,19 @@ class TabManager {
         activeIndex = index
         touchActive()
 
-        // 2. Reanudar la nueva pestaña
+        // 2. Reanudar la nueva pestaña y restaurar su estado si es necesario
         activeTab?.webView?.let { newWebView ->
+            // Si la pestaña tiene un estado guardado y el WebView está vacío, lo restauramos
+            val savedState = activeTab?.savedState
+            if (savedState != null && newWebView.url == null) {
+                newWebView.restoreState(savedState)
+                activeTab?.savedState = null // Limpiamos después de restaurar
+            }
+            
             newWebView.onResume()
             newWebView.resumeTimers()
         }
     }
-
     fun effectiveShortcutId(tab: BrowserTab): String? {
         if (tab.shortcutId != null) return tab.shortcutId
         var openerId = tab.openerTabId
