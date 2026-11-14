@@ -56,6 +56,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jhaiian.clint.R
+import androidx.compose.foundation.gestures.draggable2D
+import androidx.compose.foundation.gestures.rememberDraggable2DState
 import com.jhaiian.clint.ui.theme.LocalClintColors
 
 @Composable
