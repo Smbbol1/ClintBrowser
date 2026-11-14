@@ -387,7 +387,7 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
             )
         }
 
-        if (!state.isFullscreen && effectiveStatusBarPx > 0) {
+                if (!state.isFullscreen && effectiveStatusBarPx > 0) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -396,6 +396,30 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
                     .background(colors.surface)
             )
         }
+
+        // --- NUEVO: Botón flotante para activar el PiP cuando hay video ---
+        if (activity.isVideoPlaying && !state.isFullscreen) {
+            androidx.compose.material3.IconButton(
+                onClick = {
+                    activity.requestPictureInPictureFromWeb()
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = with(density) { state.contentPaddingBottomPx.toDp() } + 16.dp)
+                    .background(
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+                    .size(56.dp)
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Filled.PictureInPicture,
+                    contentDescription = "Activar Picture-in-Picture",
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        // ----------------------------------------------------
     }
 }
 
