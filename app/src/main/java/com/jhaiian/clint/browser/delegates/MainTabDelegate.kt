@@ -2,6 +2,7 @@ package com.jhaiian.clint.browser.delegates
 import com.jhaiian.clint.browser.MainActivity
 
 import android.annotation.SuppressLint
+import android.os.Build
 import com.jhaiian.clint.tabs.BrowserTab
 import com.jhaiian.clint.profiles.WebProfiles
 import com.jhaiian.clint.tabs.InactiveTabsPolicy
@@ -182,7 +183,13 @@ internal fun MainActivity.openNewTabSilent(
     profileId: String = WebProfiles.DEFAULT_ID,
     groupId: String? = null
 ) {
-    val webView = createWebView(false, WebProfiles.resolve(this, profileId))
+        val webView = createWebView(false, WebProfiles.resolve(this, profileId))
+    // --- NUEVO: Permitir audio simultáneo ---
+    webView.settings.mediaPlaybackRequiresUserGesture = false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        webView.setAudioFocusRequest(android.media.AudioManager.AUDIOFOCUS_NONE)
+    }
+    // ----------------------------------------
     val tab = BrowserTab(id = id, url = url, shortcutId = shortcutId, profileId = WebProfiles.profileOf(webView), groupId = groupId, webView = webView)
     if (!title.isNullOrBlank()) tab.title = title
     tabManager.add(tab)
@@ -239,7 +246,13 @@ internal fun MainActivity.openNewTabSilent(
 internal fun MainActivity.openNewTabInBackground(url: String, openerTabId: String? = null) {
     val sourceTab = openerTabId?.let { id -> tabManager.tabs.firstOrNull { it.id == id } } ?: tabManager.activeTab
     val sourceProfile = sourceTab?.takeIf { !it.isIncognito }?.profileId ?: WebProfiles.DEFAULT_ID
-    val webView = createWebView(false, WebProfiles.resolve(this, sourceProfile))
+        val webView = createWebView(false, WebProfiles.resolve(this, sourceProfile))
+    // --- NUEVO: Permitir audio simultáneo ---
+    webView.settings.mediaPlaybackRequiresUserGesture = false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        webView.setAudioFocusRequest(android.media.AudioManager.AUDIOFOCUS_NONE)
+    }
+    // ----------------------------------------
     val inheritedGroupId = sourceTab?.takeIf { !it.isIncognito }?.groupId
     val tab = BrowserTab(url = url, openerTabId = openerTabId, profileId = WebProfiles.profileOf(webView), groupId = inheritedGroupId, webView = webView)
     tabManager.addInBackground(tab)
@@ -310,7 +323,13 @@ internal fun MainActivity.openNewTab(isIncognito: Boolean, url: String = getHome
             ?.profileId
             ?: WebProfiles.DEFAULT_ID
     }
-    val webView = createWebView(isIncognito, WebProfiles.resolve(this, requestedProfile))
+        val webView = createWebView(isIncognito, WebProfiles.resolve(this, requestedProfile))
+    // --- NUEVO: Permitir audio simultáneo ---
+    webView.settings.mediaPlaybackRequiresUserGesture = false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        webView.setAudioFocusRequest(android.media.AudioManager.AUDIOFOCUS_NONE)
+    }
+    // ----------------------------------------
     val tab = BrowserTab(isIncognito = isIncognito, openerTabId = openerTabId, shortcutId = shortcutId, previousTabId = previousTabId, profileId = WebProfiles.profileOf(webView), groupId = resolvedGroupId, webView = webView)
     val index = tabManager.add(tab)
     if (isDesktopMode) addDesktopScript(tab)
@@ -435,7 +454,13 @@ internal fun MainActivity.syncTabPlayback() {
 @SuppressLint("SetJavaScriptEnabled")
 internal fun MainActivity.openRefreshLinkTab(url: String) {
     captureActiveTabThumbnail()
-    val webView = createWebView(false)
+        val webView = createWebView(false)
+    // --- NUEVO: Permitir audio simultáneo ---
+    webView.settings.mediaPlaybackRequiresUserGesture = false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        webView.setAudioFocusRequest(android.media.AudioManager.AUDIOFOCUS_NONE)
+    }
+    // ----------------------------------------
     val tab = BrowserTab(url = url, isRefreshLinkTab = true, webView = webView)
     val index = tabManager.add(tab)
     if (isDesktopMode) addDesktopScript(tab)
