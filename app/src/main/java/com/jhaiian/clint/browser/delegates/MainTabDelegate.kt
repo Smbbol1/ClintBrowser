@@ -470,12 +470,18 @@ internal fun MainActivity.openRefreshLinkTab(url: String) {
     addDataSaverMediaScript(tab)
     addUserScripts(tab)
     addBackgroundPlaybackScript(tab)
-    webView.webViewClient = ClintWebViewClient(
+        webView.webViewClient = ClintWebViewClient(
         prefs = prefs,
         isActive = { tabManager.activeTab?.id == tab.id },
         onPageStartedCallback = { u -> if (tabManager.activeTab?.id == tab.id) onPageStarted(u) },
         onPageFinishedCallback = { u -> if (tabManager.activeTab?.id == tab.id) onPageFinished(u) },
-        onTabUrlUpdatedCallback = { wv, u -> onTabUrlUpdated(wv, u) },
+        onTabUrlUpdatedCallback = { wv, u ->
+            onTabUrlUpdated(wv, u)
+            // --- NUEVO: Guardar la última URL visitada para la ventana flotante ---
+            if (!tab.isIncognito && u.isNotEmpty() && !u.contains("clint://home") && !u.startsWith("about:") && !u.startsWith("javascript:")) {
+                prefs.edit().putString("last_visited_url", u).apply()
+            }
+        },
         onWebsiteBlockedCallback = { blockedUrl -> onWebsiteBlocked(blockedUrl, tab.url, tab.id) },
         onQuiverGuardDocumentBlocked = { blockedUrl -> onQuiverGuardDocumentBlocked(blockedUrl, tab.id) },
         getDesktopHeaders = { buildRequestHeaders() },
