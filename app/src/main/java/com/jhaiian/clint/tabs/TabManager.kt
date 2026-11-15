@@ -65,15 +65,13 @@ class TabManager {
         com.jhaiian.clint.profiles.WebProfiles.unregisterTab(tab.id)
     }
 
-            fun switchTo(index: Int) {
+                fun switchTo(index: Int) {
         if (index !in tabs.indices) return
         
         // 1. Pausar la pestaña actual y guardar su estado
         activeTab?.webView?.let { oldWebView ->
-            // Guardamos el estado de la página (historial, scroll, formularios)
             val bundle = android.os.Bundle()
             oldWebView.saveState(bundle)
-            // Lo guardamos en la pestaña para restaurarlo luego
             activeTab?.savedState = bundle
             
             oldWebView.onPause()
@@ -84,13 +82,18 @@ class TabManager {
         activeIndex = index
         touchActive()
 
-        // 2. Reanudar la nueva pestaña y restaurar su estado si es necesario
+        // 2. Reanudar la nueva pestaña
         activeTab?.webView?.let { newWebView ->
-            // Si la pestaña tiene un estado guardado y el WebView está vacío, lo restauramos
             val savedState = activeTab?.savedState
+            val currentUrl = activeTab?.url // La URL que guardamos en la pestaña
+            
             if (savedState != null && newWebView.url == null) {
                 newWebView.restoreState(savedState)
-                activeTab?.savedState = null // Limpiamos después de restaurar
+                activeTab?.savedState = null
+            } else if (newWebView.url == null && currentUrl != null && currentUrl.isNotEmpty()) {
+                // Si el WebView está vacío y no hay estado, recargamos la URL exacta
+                // Esto es crucial para Gemini: si el estado se perdió, al menos recarga la conversación
+                newWebView.loadUrl(currentUrl)
             }
             
             newWebView.onResume()
