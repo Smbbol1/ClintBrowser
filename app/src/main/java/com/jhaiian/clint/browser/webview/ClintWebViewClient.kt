@@ -132,7 +132,7 @@ class ClintWebViewClient(
         if (isActive()) onPageStartedCallback(url)
     }
 
-            override fun onPageFinished(view: WebView, url: String) {
+                override fun onPageFinished(view: WebView, url: String) {
         if (url.startsWith("https://", ignoreCase = true)) Uri.parse(url).host?.lowercase()?.let { upgradedHostOrigins.remove(it) }
         super.onPageFinished(view, url)
         cachedPageUrl = url
@@ -148,7 +148,7 @@ class ClintWebViewClient(
         }
         // ----------------------------------------------
 
-                                // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
+        // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
         view.addJavascriptInterface(object {
             @android.webkit.JavascriptInterface
             fun onVideoStateChanged(isPlaying: Boolean) {
@@ -191,12 +191,9 @@ class ClintWebViewClient(
                     for (var i = 0; i < videos.length; i++) {
                         if (!videos[i].paused && !videos[i].ended) {
                             isPlaying = true;
-                            // Usamos la API nativa del navegador para el PiP
                             if (document.pictureInPictureEnabled && !videos[i].disablePictureInPicture) {
                                 if (document.pictureInPictureElement !== videos[i]) {
-                                    videos[i].requestPictureInPicture().catch(function(e) {
-                                        // Si falla (porque el usuario no ha interactuado), no pasa nada
-                                    });
+                                    videos[i].requestPictureInPicture().catch(function(e) {});
                                 }
                             }
                             break;
@@ -207,10 +204,8 @@ class ClintWebViewClient(
                     }
                 }
                 
-                // Revisamos cada segundo
                 setInterval(checkVideoAndPip, 1000);
                 
-                // Observamos cambios en el DOM (para detectar videos que aparecen dinámicamente)
                 var observer = new MutationObserver(function(mutations) {
                     checkVideoAndPip();
                 });
