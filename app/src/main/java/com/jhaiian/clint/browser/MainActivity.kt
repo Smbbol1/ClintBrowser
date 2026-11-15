@@ -531,16 +531,52 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-                        // --- NUEVO: Función para activar el PiP desde el botón flotante ---
+                            // --- NUEVO: Función para activar el PiP desde el botón flotante ---
     @android.webkit.JavascriptInterface
     fun requestPictureInPictureFromWeb() {
         runOnUiThread {
-            // Le decimos al WebView que active el PiP nativo del video
             val webView = tabManager.activeTab?.webView ?: return@runOnUiThread
             webView.evaluateJavascript(
                 "window.ClintPipButtonBridge && window.ClintPipButtonBridge.triggerPip();",
                 null
             )
+        }
+    }
+
+    // --- NUEVO: Función para activar/desactivar el Modo Lite (Funcional) ---
+    fun toggleLiteMode() {
+        runOnUiThread {
+            uiState.isLiteMode = !uiState.isLiteMode
+            
+            // Aplicamos la configuración a TODAS las pestañas abiertas
+            tabManager.tabs.forEach { tab ->
+                tab.webView.settings.apply {
+                    if (uiState.isLiteMode) {
+                        // MODO LITE: Ahorro de recursos y prioridad a multimedia
+                        cacheMode = android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
+                        blockNetworkImage = true
+                        loadsImagesAutomatically = false
+                        javaScriptEnabled = true // Necesario para videos
+                        domStorageEnabled = false
+                        databaseEnabled = false
+                        setSupportZoom(false)
+                    } else {
+                        // MODO NORMAL: Restaurar todas las funciones
+                        cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
+                        blockNetworkImage = false
+                        loadsImagesAutomatically = true
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        databaseEnabled = true
+                        setSupportZoom(true)
+                    }
+                }
+                // Recargamos la página para aplicar los cambios
+                tab.webView.reload()
+            }
+            
+            val message = if (uiState.isLiteMode) "Modo Lite ACTIVADO: Navegación ligera" else "Modo Lite DESACTIVADO"
+            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
         }
     }
 
