@@ -531,14 +531,16 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-                    // --- NUEVO: Función para activar el PiP desde el botón flotante ---
+                        // --- NUEVO: Función para activar el PiP desde el botón flotante ---
     @android.webkit.JavascriptInterface
     fun requestPictureInPictureFromWeb() {
         runOnUiThread {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Dejamos que la API nativa del video actúe, sin forzar proporciones
-                enterPictureInPictureMode()
-            }
+            // Le decimos al WebView que active el PiP nativo del video
+            val webView = tabManager.activeTab?.webView ?: return@runOnUiThread
+            webView.evaluateJavascript(
+                "window.ClintPipButtonBridge && window.ClintPipButtonBridge.triggerPip();",
+                null
+            )
         }
     }
 
