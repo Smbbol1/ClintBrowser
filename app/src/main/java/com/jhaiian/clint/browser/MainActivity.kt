@@ -553,23 +553,25 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-            // --- NUEVO: Función para activar/desactivar el Modo Lite (Funcional) ---
+                // --- NUEVO: Función para activar/desactivar el Modo Lite (Funcional) ---
     fun toggleLiteMode() {
         runOnUiThread {
             uiState.isLiteMode = !uiState.isLiteMode
             
-            // Aplicamos la configuración a TODAS las pestañas abiertas
+                        // Aplicamos la configuración a TODAS las pestañas abiertas
             tabManager.tabs.forEach { tab ->
                 tab.webView.settings.apply {
                     if (uiState.isLiteMode) {
-                        // MODO LITE: Ahorro de recursos y prioridad a multimedia
+                        // MODO LITE: Ahorro de recursos pero funcional
                         cacheMode = android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
-                        blockNetworkImage = true
-                        loadsImagesAutomatically = false
+                        blockNetworkImage = false // MOSTRAR IMÁGENES
+                        loadsImagesAutomatically = true // MOSTRAR IMÁGENES
                         javaScriptEnabled = true // Necesario para videos
-                        domStorageEnabled = false
-                        databaseEnabled = false
-                        setSupportZoom(false)
+                        domStorageEnabled = true // Necesario para que las webs funcionen
+                        databaseEnabled = false // Ahorro extra
+                        setSupportZoom(true) // ZOOM HABILITADO
+                        setBuiltInZoomControls(true) // Controles de zoom (pellizco)
+                        setDisplayZoomControls(false) // Ocultar botones feos de Android
                     } else {
                         // MODO NORMAL: Restaurar todas las funciones
                         cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
@@ -579,6 +581,8 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
                         domStorageEnabled = true
                         databaseEnabled = true
                         setSupportZoom(true)
+                        setBuiltInZoomControls(true)
+                        setDisplayZoomControls(false)
                     }
                     
                     // --- NUEVO: Permitir autoplay de video ---
