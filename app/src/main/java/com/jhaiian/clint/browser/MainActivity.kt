@@ -553,7 +553,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-    // --- NUEVO: Función para activar/desactivar el Modo Lite (Funcional) ---
+        // --- NUEVO: Función para activar/desactivar el Modo Lite (Funcional) ---
     fun toggleLiteMode() {
         runOnUiThread {
             uiState.isLiteMode = !uiState.isLiteMode
@@ -580,7 +580,16 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
                         databaseEnabled = true
                         setSupportZoom(true)
                     }
+                    
+                    // --- NUEVO: Permitir audio simultáneo ---
+                    mediaPlaybackRequiresUserGesture = false // Permite autoplay
                 }
+                
+                // Si el dispositivo es Android 8.0+, le decimos al WebView que no pida el foco exclusivo
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    tab.webView.setAudioFocusRequest(android.media.AudioManager.AUDIOFOCUS_NONE)
+                }
+                
                 // Recargamos la página para aplicar los cambios
                 tab.webView.reload()
             }
