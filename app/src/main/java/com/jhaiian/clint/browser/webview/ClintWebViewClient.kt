@@ -148,10 +148,11 @@ class ClintWebViewClient(
         }
         // ----------------------------------------------
 
-        // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
+                // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
         view.addJavascriptInterface(object {
             @android.webkit.JavascriptInterface
             fun onVideoStateChanged(isPlaying: Boolean) {
+                // Avisamos a la app si hay un video reproduciéndose
                 (view.context as? com.jhaiian.clint.browser.MainActivity)?.onVideoPlayingChanged(isPlaying)
             }
         }, "ClintVideoBridge")
