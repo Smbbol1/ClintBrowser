@@ -60,6 +60,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.jhaiian.clint.R
 import androidx.compose.foundation.gestures.draggable2D
 import androidx.compose.foundation.gestures.rememberDraggable2DState
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Eco
 import com.jhaiian.clint.ui.theme.LocalClintColors
 
 @Composable
@@ -403,40 +405,39 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
             )
         }
 
-                        // --- NUEVO: Botón flotante arrastrable para activar el PiP ---
-        if (activity.isVideoPlaying && !state.isFullscreen) {
-            // Estado para la posición del botón (arrastrable)
-            var buttonOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
-            
-            // Usamos un Box para que el área de arrastre coincida con el botón
-            Box(
+                                // --- NUEVO: Botón flotante arrastrable para activar/desactivar el Modo Lite ---
+        var buttonOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+        
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset { androidx.compose.ui.unit.IntOffset(buttonOffset.x.roundToInt(), buttonOffset.y.roundToInt()) }
+                .draggable2D(
+                    state = androidx.compose.foundation.gestures.rememberDraggable2DState { delta ->
+                        buttonOffset += delta
+                    }
+                )
+        ) {
+            androidx.compose.material3.IconButton(
+                onClick = {
+                    activity.toggleLiteMode()
+                },
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset { androidx.compose.ui.unit.IntOffset(buttonOffset.x.roundToInt(), buttonOffset.y.roundToInt()) }
-                    .draggable2D(
-                        state = androidx.compose.foundation.gestures.rememberDraggable2DState { delta ->
-                            buttonOffset += delta
-                        }
+                    .padding(16.dp)
+                    .background(
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        shape = androidx.compose.foundation.shape.CircleShape
                     )
+                    .size(56.dp)
             ) {
-                androidx.compose.material3.IconButton(
-                    onClick = {
-                        activity.requestPictureInPictureFromWeb()
-                    },
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .background(
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                            shape = androidx.compose.foundation.shape.CircleShape
-                        )
-                        .size(56.dp)
-                ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Filled.PictureInPicture,
-                        contentDescription = "Activar Picture-in-Picture",
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                androidx.compose.material3.Icon(
+                    imageVector = if (state.isLiteMode) 
+                        androidx.compose.material.icons.Icons.Filled.Bolt
+                    else 
+                        androidx.compose.material.icons.Icons.Filled.Eco,
+                    contentDescription = if (state.isLiteMode) "Modo Lite Activado (Rápido)" else "Modo Normal",
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
         // ----------------------------------------------------
