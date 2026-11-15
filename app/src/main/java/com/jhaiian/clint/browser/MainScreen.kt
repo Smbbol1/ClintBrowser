@@ -405,8 +405,19 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
             )
         }
 
-                                // --- NUEVO: Botón flotante arrastrable para activar/desactivar el Modo Lite ---
+                                        // --- NUEVO: Botón flotante arrastrable para activar/desactivar el Modo Lite ---
         var buttonOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+        
+        // --- NUEVO: Control de transparencia ---
+        var isButtonVisible by remember { mutableStateOf(true) }
+        
+        // Efecto que reduce la opacidad después de 3 segundos
+        androidx.compose.runtime.LaunchedEffect(isButtonVisible) {
+            if (isButtonVisible) {
+                kotlinx.coroutines.delay(3000) // 3 segundos
+                isButtonVisible = false
+            }
+        }
         
         Box(
             modifier = Modifier
@@ -415,11 +426,17 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
                 .draggable2D(
                     state = androidx.compose.foundation.gestures.rememberDraggable2DState { delta ->
                         buttonOffset += delta
+                        isButtonVisible = true // Vuelve a ser visible al arrastrar
                     }
                 )
+                // Animación suave de opacidad
+                .graphicsLayer {
+                    alpha = if (isButtonVisible) 1f else 0.4f 
+                }
         ) {
             androidx.compose.material3.IconButton(
                 onClick = {
+                    isButtonVisible = true // Vuelve a ser visible al tocar
                     activity.toggleLiteMode()
                 },
                 modifier = Modifier
@@ -428,7 +445,7 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
                         color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                         shape = androidx.compose.foundation.shape.CircleShape
                     )
-                    .size(56.dp)
+                    .size(40.dp) // <--- TAMAÑO REDUCIDO (antes 56.dp)
             ) {
                 androidx.compose.material3.Icon(
                     imageVector = if (state.isLiteMode) 
@@ -436,7 +453,8 @@ internal fun MainScreen(activity: MainActivity, state: MainUiState) {
                     else 
                         androidx.compose.material.icons.Icons.Filled.Eco,
                     contentDescription = if (state.isLiteMode) "Modo Lite Activado (Rápido)" else "Modo Normal",
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp) // Ajustamos el icono al nuevo tamaño
                 )
             }
         }
