@@ -79,9 +79,10 @@ internal class MainUiState {
     var contentPaddingTopPx by mutableIntStateOf(0)
     var contentPaddingBottomPx by mutableIntStateOf(0)
 
-        var isFullscreen by mutableStateOf(false)
+                var isFullscreen by mutableStateOf(false)
     var isShortcutFrameless by mutableStateOf(false)
-    var videoPlayingRevision by mutableIntStateOf(0) // <--- NUEVO
+    var videoPlayingRevision by mutableIntStateOf(0)
+    var isLiteMode by mutableStateOf(false) // <--- NUEVO: Modo Lite
 
     var imageLongPressRequest by mutableStateOf<com.jhaiian.clint.browser.sheets.ImageLongPressRequest?>(null)
     var linkLongPressRequest by mutableStateOf<com.jhaiian.clint.browser.sheets.LinkLongPressRequest?>(null)
