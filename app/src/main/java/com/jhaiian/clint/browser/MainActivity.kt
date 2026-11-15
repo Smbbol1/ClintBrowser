@@ -436,15 +436,24 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
         setupBackPressedDispatcher()
 
-        // --- NUEVO: Cargar la última URL si se abre una nueva instancia (ventana flotante) ---
-        if (savedInstanceState == null) {
+                // --- NUEVO: Cargar la última URL si se abre una nueva instancia (ventana flotante) ---
+        if (savedInstanceState == null && refreshLinkSession == null && shortcutId == null) {
             val lastUrl = prefs.getString("last_visited_url", null)
+            val tab = tabManager.activeTab
+            val currentUrl = tab?.webView?.url
+            val isBlank = currentUrl.isNullOrEmpty() || currentUrl == "about:blank"
+            val isHome = currentUrl?.contains("clint://home") == true
+            
             // Solo lo hacemos si no hay una URL entrante explícita (intent) y la pestaña activa está vacía o es la home
-            if (lastUrl != null && !lastUrl.contains("clint://home") && tabManager.activeTab?.webView?.url.isNullOrEmpty()) {
-                tabManager.activeTab?.let { tab ->
-                    tab.url = lastUrl
-                    tab.webView.loadUrl(lastUrl)
-                }
+            if (
+                !lastUrl.isNullOrBlank() &&
+                !lastUrl.contains("clint://home") &&
+                tab != null &&
+                !tab.isIncognito &&
+                (isBlank || isHome)
+            ) {
+                tab.url = lastUrl
+                tab.webView.loadUrl(lastUrl)
             }
         }
     }
