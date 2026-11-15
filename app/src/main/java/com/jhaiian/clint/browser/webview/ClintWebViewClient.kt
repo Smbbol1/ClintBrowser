@@ -148,13 +148,37 @@ class ClintWebViewClient(
         }
         // ----------------------------------------------
 
-                        // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
+                                // --- NUEVO: Detectar video y activar PiP nativo del navegador ---
         view.addJavascriptInterface(object {
             @android.webkit.JavascriptInterface
             fun onVideoStateChanged(isPlaying: Boolean) {
                 (view.context as? com.jhaiian.clint.browser.MainActivity)?.onVideoPlayingChanged(isPlaying)
             }
         }, "ClintVideoBridge")
+        
+        // --- NUEVO: Puente para que el botón flotante active el PiP nativo ---
+        view.addJavascriptInterface(object {
+            @android.webkit.JavascriptInterface
+            fun triggerPip() {
+                view.post {
+                    val js = """
+                        (function() {
+                            var videos = document.querySelectorAll('video');
+                            for (var i = 0; i < videos.length; i++) {
+                                if (!videos[i].paused && !videos[i].ended) {
+                                    if (document.pictureInPictureEnabled && !videos[i].disablePictureInPicture) {
+                                        videos[i].requestPictureInPicture().catch(function(e) {});
+                                    }
+                                    break;
+                                }
+                            }
+                        })();
+                    """.trimIndent()
+                    view.evaluateJavascript(js, null)
+                }
+            }
+        }, "ClintPipButtonBridge")
+        // ---------------------------------------------------------------------
         
         val js = """
             (function() {
