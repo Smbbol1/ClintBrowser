@@ -478,7 +478,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         }
     }
 
-    override fun onResume() {
+        override fun onResume() {
         super.onResume()
         if (isFinishing) return
         ClintDownloadManager.resumeTimeoutPaused(this)
@@ -511,6 +511,16 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
             applyUserScripts()
         }
         uiState.homepageImageFullBrightness = prefs.getBoolean(com.jhaiian.clint.browser.home.PREF_HOMEPAGE_IMAGE_FULL_BRIGHTNESS, false)
+    }
+
+    // --- NUEVO: Evitar que el audio se pause al abrir otra ventana ---
+    override fun onPause() {
+        // Si hay un video reproduciéndose, NO llamamos a super.onPause()
+        // ni pausamos el WebView. Esto permite que la ventana flotante
+        // siga reproduciendo audio y video aunque la ventana principal tenga el foco.
+        if (!isVideoPlaying) {
+            super.onPause()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
