@@ -419,7 +419,7 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
             setIntent(android.content.Intent())
             restoreTabs()
             openOrResumeShortcutTab(shortcutId, fallbackUrl)
-        } else {
+                } else {
             val intentUrl = getUrlFromIntent(intent)
             setIntent(android.content.Intent())
             if (!intentUrl.isNullOrEmpty()) {
@@ -435,6 +435,18 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
             }
         }
         setupBackPressedDispatcher()
+
+        // --- NUEVO: Cargar la última URL si se abre una nueva instancia (ventana flotante) ---
+        if (savedInstanceState == null) {
+            val lastUrl = prefs.getString("last_visited_url", null)
+            // Solo lo hacemos si no hay una URL entrante explícita (intent) y la pestaña activa está vacía o es la home
+            if (lastUrl != null && !lastUrl.contains("clint://home") && tabManager.activeTab?.webView?.url.isNullOrEmpty()) {
+                tabManager.activeTab?.let { tab ->
+                    tab.url = lastUrl
+                    tab.webView.loadUrl(lastUrl)
+                }
+            }
+        }
     }
 
     private fun refreshLinkStartUrl(pageUrl: String, referer: String, originalUrl: String): String =
