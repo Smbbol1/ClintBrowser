@@ -1382,17 +1382,26 @@ td,th{border:1px solid $secondaryColor;padding:6px 8px;}
         }
     }
 
-    // --- NUEVO: Guardar el estado de las pestañas antes de que Android las destruya por falta de RAM ---
+        // --- NUEVO: Guardar el estado de las pestañas antes de que Android las destruya por falta de RAM ---
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        // Si el sistema necesita memoria, guardamos el estado de todas las pestañas
-        // para que al volver a la app, las conversaciones y formularios sigan ahí
+        
         if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            // 1. Guardamos el estado de TODAS las pestañas
             tabManager.tabs.forEach { tab ->
                 if (tab.savedState == null) {
                     val bundle = android.os.Bundle()
                     tab.webView.saveState(bundle)
                     tab.savedState = bundle
+                }
+            }
+            
+            // 2. Si el sistema está bajo de memoria (BACKGROUND o MODERATE),
+            // priorizamos la pestaña activa (donde está Gemini)
+            if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+                tabManager.activeTab?.webView?.let { activeWebView ->
+                    // Forzamos a que la caché se mantenga en RAM
+                    activeWebView.settings.cacheMode = android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK
                 }
             }
         }
