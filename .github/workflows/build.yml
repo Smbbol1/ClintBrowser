@@ -1,7 +1,7 @@
 name: Build ARM v8 APK
 
 on:
-  workflow_dispatch: # Solo se activa manualmente desde la pestaña "Actions"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,26 +11,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
-
-      # 1. Instalar Gradle directamente (en lugar de usar el wrapper)
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.7'
+          java-version: '21'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 2. REGENERAR EL WRAPPER (Esto soluciona el error del JAR corrupto)
-      - name: Regenerate Gradle Wrapper
-        run: gradle wrapper --gradle-version 8.7
+      # Usa automáticamente la versión definida en gradle-wrapper.properties
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      # 3. Compilar usando el wrapper recién generado
       - name: Build Debug APK (ARM v8 only)
         run: ./gradlew assembleDebug -Pandroid.injected.build.abi=arm64-v8a
 
@@ -54,4 +47,4 @@ jobs:
           echo "Descarga tu APK haciendo clic en el botón de abajo." >> $GITHUB_STEP_SUMMARY
           echo "| Archivo | Enlace |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **ClintBrowser-ARMv8.zip** | [Descargar Artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ClintBrowser-ARMv8.zip** | Descargar Artifact |" >> $GITHUB_STEP_SUMMARY
