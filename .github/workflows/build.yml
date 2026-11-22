@@ -26,7 +26,7 @@ jobs:
       - name: Prepare ZIP
         run: |
           mkdir -p output
-          APK_FILE=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
+          APK_FILE=$(find . -name "*.apk" | head -n 1)
           echo "APK encontrado en: $APK_FILE"
           cp "$APK_FILE" output/ClintBrowser-ARMv8-debug.apk
           cd output
