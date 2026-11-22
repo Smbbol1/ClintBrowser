@@ -301,12 +301,13 @@ private fun SettingsListPane(
                     onUpdatesClick = { onNavigate(DEST_UPDATES, null) },
                     onMiscClick = { onNavigate(DEST_MISC, null) },
                                                             onDebugClick = { onNavigate(DEST_DEBUG, null) },
-                    onAboutClick = { onNavigate(DEST_ABOUT, null) },
+                                        onAboutClick = { onNavigate(DEST_ABOUT, null) },
                     onSupportClintClick = { onNavigate(DEST_SUPPORT_CLINT, null) },
-                    onCustomClick = {}
+                    onCustomClick = { onNavigate(DEST_CUSTOM, null) }
                 )
 
             }
+
 
         }
     }
