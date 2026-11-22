@@ -374,11 +374,11 @@ private fun destinationTitleRes(destination: String): Int = when (destination) {
     DEST_UPDATES -> R.string.pref_updates_title
     DEST_MISC -> R.string.pref_misc_title
     DEST_TRANSLATIONS -> R.string.translation_settings_title
-    DEST_DEBUG -> R.string.debug_title
-        DEST_ABOUT -> R.string.about
-    DEST_CUSTOM -> R.string.settings
+        DEST_DEBUG -> R.string.debug_title
+    DEST_ABOUT -> R.string.about
     else -> R.string.settings
 }
+
 
 @Composable
 private fun SettingsToolbar(title: String, onBack: () -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
