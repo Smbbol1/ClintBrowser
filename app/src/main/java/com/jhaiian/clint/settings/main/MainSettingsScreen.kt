@@ -75,8 +75,9 @@ fun MainSettingsScreen(
     onUpdatesClick: () -> Unit,
     onMiscClick: () -> Unit,
     onDebugClick: () -> Unit,
-    onAboutClick: () -> Unit,
-    onSupportClintClick: () -> Unit
+        onAboutClick: () -> Unit,
+    onSupportClintClick: () -> Unit,
+    onCustomClick: () -> Unit // <-- NUEVO
 ) {
     val updatesItem = if (BuildConfig.IS_FOSS) {
         MainSettingsItem(
