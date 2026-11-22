@@ -298,7 +298,8 @@ private fun SettingsListPane(
                     onMiscClick = { onNavigate(DEST_MISC, null) },
                     onDebugClick = { onNavigate(DEST_DEBUG, null) },
                     onAboutClick = { onNavigate(DEST_ABOUT, null) },
-                    onSupportClintClick = { onNavigate(DEST_SUPPORT_CLINT, null) }
+                                        onSupportClintClick = { onNavigate(DEST_SUPPORT_CLINT, null) },
+                    onCustomClick = { onNavigate(DEST_CUSTOM, null) }
                 )
             }
         }
