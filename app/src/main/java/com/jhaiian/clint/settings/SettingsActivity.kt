@@ -77,6 +77,7 @@ internal const val DEST_TRANSLATIONS = "translations"
 internal const val DEST_DEBUG = "debug"
 internal const val DEST_ABOUT = "about"
 internal const val DEST_SUPPORT_CLINT = "support_clint"
+internal const val DEST_CUSTOM = "custom"
 
 class SettingsActivity : ClintActivity(), OverlayHostActivity {
 
