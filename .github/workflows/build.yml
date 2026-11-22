@@ -1,7 +1,7 @@
 name: Build ARM v8 APK
 
 on:
-  workflow_dispatch: # Solo se activa manualmente desde la pestaña "Actions"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,18 +17,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      # Instala automáticamente la versión de Gradle definida en gradle-wrapper.properties
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Compila únicamente la variante 'github' en modo Debug para ARM v8
       - name: Build Debug APK (ARM v8 only)
         run: gradle assembleGithubDebug -Pandroid.injected.build.abi=arm64-v8a
 
       - name: Prepare ZIP
         run: |
           mkdir -p output
-          cp app/build/outputs/apk/github/debug/*.apk output/ClintBrowser-ARMv8-debug.apk
+          APK_FILE=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
+          echo "APK encontrado en: $APK_FILE"
+          cp "$APK_FILE" output/ClintBrowser-ARMv8-debug.apk
           cd output
           zip -r ClintBrowser-ARMv8.zip ClintBrowser-ARMv8-debug.apk
 
