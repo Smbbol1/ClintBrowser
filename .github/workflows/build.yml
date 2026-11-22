@@ -1,7 +1,7 @@
 name: Build ARM v8 APK
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Solo se activa manualmente desde la pestaña "Actions"
 
 jobs:
   build:
@@ -17,18 +17,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      # Instala automáticamente la versión exacta definida en gradle-wrapper.properties
+      # Instala automáticamente la versión de Gradle definida en gradle-wrapper.properties
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Usa 'gradle' directamente en lugar de './gradlew'
+      # Compila únicamente la variante 'github' en modo Debug para ARM v8
       - name: Build Debug APK (ARM v8 only)
-        run: gradle assembleDebug -Pandroid.injected.build.abi=arm64-v8a
+        run: gradle assembleGithubDebug -Pandroid.injected.build.abi=arm64-v8a
 
       - name: Prepare ZIP
         run: |
           mkdir -p output
-          cp app/build/outputs/apk/debug/app-debug.apk output/ClintBrowser-ARMv8-debug.apk
+          cp app/build/outputs/apk/github/debug/*.apk output/ClintBrowser-ARMv8-debug.apk
           cd output
           zip -r ClintBrowser-ARMv8.zip ClintBrowser-ARMv8-debug.apk
 
@@ -42,7 +42,7 @@ jobs:
       - name: Generate Summary
         run: |
           echo "### ✅ Compilación Exitosa" >> $GITHUB_STEP_SUMMARY
-          echo "Descarga tu APK haciendo clic en el botón de abajo." >> $GITHUB_STEP_SUMMARY
-          echo "| Archivo | Enlace |" >> $GITHUB_STEP_SUMMARY
+          echo "Descarga tu APK haciendo clic en la sección **Artifacts** al final de esta página." >> $GITHUB_STEP_SUMMARY
+          echo "| Archivo | Ubicación |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **ClintBrowser-ARMv8.zip** | Descargar Artifact |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ClintBrowser-ARMv8.zip** | Sección Artifacts (abajo) |" >> $GITHUB_STEP_SUMMARY
