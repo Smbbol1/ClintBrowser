@@ -431,7 +431,24 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
                 }
             }
         }
-        setupBackPressedDispatcher()
+                setupBackPressedDispatcher()
+        
+        // NUEVO: Guardar URL solo si el interruptor está activo
+        if (prefs.getBoolean("restore_session_enabled", true)) {
+            val sessionPrefs = getSharedPreferences("BrowserSession", android.content.Context.MODE_PRIVATE)
+            val urlMonitor = Handler(Looper.getMainLooper())
+            val urlRunnable = object : Runnable {
+                override fun run() {
+                    tabManager.activeTab?.webView?.url?.let { currentUrl ->
+                        if (currentUrl.startsWith("http") && !currentUrl.contains("about:blank")) {
+                            sessionPrefs.edit().putString("last_url", currentUrl).apply()
+                        }
+                    }
+                    urlMonitor.postDelayed(this, 3000L)
+                }
+            }
+            urlMonitor.postDelayed(urlRunnable, 3000L)
+        }
     }
 
     private fun refreshLinkStartUrl(pageUrl: String, referer: String, originalUrl: String): String =
