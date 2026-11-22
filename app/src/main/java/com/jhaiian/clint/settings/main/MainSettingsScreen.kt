@@ -92,7 +92,11 @@ fun MainSettingsScreen(
     }
 
     val groups = listOf(
-        stringResource(R.string.settings_group_general) to listOf(
+                stringResource(R.string.settings_group_general) to listOf(
+            MainSettingsItem(
+                MainSettingsEntry.CUSTOM, androidx.compose.material.icons.Icons.Filled.Tune,
+                "Ajustes Personalizados", "Sesión, URLs y navegación", onCustomClick
+            ),
             MainSettingsItem(
                 MainSettingsEntry.BROWSER, androidx.compose.material.icons.Icons.Filled.Explore,
                 stringResource(R.string.browser_settings), stringResource(R.string.browser_settings_summary), onBrowserClick
