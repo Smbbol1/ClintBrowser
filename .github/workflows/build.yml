@@ -17,6 +17,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # 1. Instalar Gradle directamente (en lugar de usar el wrapper)
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
@@ -25,18 +26,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # --- OPCIÓN 2: DESCARGA AUTOMÁTICA DEL JAR SI FALTA ---
-      - name: Download missing Gradle wrapper jar
-        run: |
-          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Descargando gradle-wrapper.jar..."
-            mkdir -p gradle/wrapper
-            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar
-          else
-            echo "gradle-wrapper.jar ya existe."
-          fi
-      # -------------------------------------------------------
+      # 2. REGENERAR EL WRAPPER (Esto soluciona el error del JAR corrupto)
+      - name: Regenerate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.7
 
+      # 3. Compilar usando el wrapper recién generado
       - name: Build Debug APK (ARM v8 only)
         run: ./gradlew assembleDebug -Pandroid.injected.build.abi=arm64-v8a
 
