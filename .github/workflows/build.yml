@@ -20,29 +20,34 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Debug APK (ARM v8 only)
-        run: gradle assembleGithubDebug -Pandroid.injected.build.abi=arm64-v8a
+      # Compila normalmente para que Android firme y alinee el APK correctamente
+      - name: Build Debug APK
+        run: gradle assembleGithubDebug
 
-      - name: Prepare ZIP
+      - name: Prepare APK
         run: |
           mkdir -p output
-          APK_FILE=$(find . -name "*.apk" | head -n 1)
-          echo "APK encontrado en: $APK_FILE"
+          echo "=== APKs generados ==="
+          find . -name "*.apk"
+          APK_FILE=$(find . -name "*arm64-v8a*.apk" ! -name "*unsigned*" | head -n 1)
+          if [ -z "$APK_FILE" ]; then
+            APK_FILE=$(find . -name "*.apk" ! -name "*unsigned*" | head -n 1)
+          fi
+          echo "=== APK seleccionado: $APK_FILE ==="
           cp "$APK_FILE" output/ClintBrowser-ARMv8-debug.apk
-          cd output
-          zip -r ClintBrowser-ARMv8.zip ClintBrowser-ARMv8-debug.apk
 
-      - name: Upload ZIP to Summary
+      # GitHub ya lo empaqueta en un solo ZIP automáticamente
+      - name: Upload APK to Summary
         uses: actions/upload-artifact@v4
         with:
-          name: ClintBrowser-ARMv8-ZIP
-          path: output/ClintBrowser-ARMv8.zip
+          name: ClintBrowser-ARMv8-APK
+          path: output/ClintBrowser-ARMv8-debug.apk
           retention-days: 7
 
       - name: Generate Summary
         run: |
           echo "### ✅ Compilación Exitosa" >> $GITHUB_STEP_SUMMARY
-          echo "Descarga tu APK haciendo clic en la sección **Artifacts** al final de esta página." >> $GITHUB_STEP_SUMMARY
+          echo "Descarga tu APK haciendo clic en la sección **Artifacts** al final de esta página (solo requiere descomprimir una vez)." >> $GITHUB_STEP_SUMMARY
           echo "| Archivo | Ubicación |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **ClintBrowser-ARMv8.zip** | Sección Artifacts (abajo) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ClintBrowser-ARMv8-APK.zip** | Sección Artifacts (abajo) |" >> $GITHUB_STEP_SUMMARY
