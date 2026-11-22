@@ -1,60 +1,66 @@
 package com.jhaiian.clint.settings.main
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import android.content.SharedPreferences
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
+import com.jhaiian.clint.settings.common.SettingsRow
+import com.jhaiian.clint.settings.common.SettingsScreenScaffold
+import com.jhaiian.clint.settings.common.SettingsSection
+import com.jhaiian.clint.settings.common.SettingsSectionLabel
+import com.jhaiian.clint.ui.ClintSwitch
+import com.jhaiian.clint.ui.theme.LocalClintColors
 
 @Composable
 fun CustomSettingsScreen() {
     val context = LocalContext.current
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    
-    // Estado para el interruptor
-    var isSessionRestoreEnabled by remember { 
-        mutableStateOf(prefs.getBoolean("restore_session_enabled", true)) 
-    }
+    val prefs = remember { PreferenceManager.getDefaultSharedPreferences(context) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Ajustes Personalizados",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // --- TU INTERRUPTOR ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Recordar conversación al volver",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Carga la última URL visitada (ej. Gemini) al abrir el navegador.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = isSessionRestoreEnabled,
-                onCheckedChange = { isChecked ->
-                    isSessionRestoreEnabled = isChecked
-                    prefs.edit().putBoolean("restore_session_enabled", isChecked).apply()
-                }
+    SettingsScreenScaffold {
+        SettingsSectionLabel("Sesión y navegación")
+        SettingsSection(LocalClintColors.current.cardBackground) {
+            CustomFeatureToggle(
+                prefs = prefs,
+                prefKey = "restore_session_enabled",
+                defaultValue = true,
+                icon = Icons.Filled.Restore,
+                title = "Recordar conversación al volver",
+                summary = "Carga la última URL visitada (ej. Gemini) al abrir el navegador."
             )
         }
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
     }
+}
+
+@Composable
+private fun CustomFeatureToggle(
+    prefs: SharedPreferences,
+    prefKey: String,
+    defaultValue: Boolean = false,
+    icon: ImageVector = Icons.Filled.Build,
+    title: String,
+    summary: String
+) {
+    val colors = LocalClintColors.current
+    var isEnabled by remember {
+        mutableStateOf(prefs.getBoolean(prefKey, defaultValue))
+    }
+
+    SettingsRow(
+        icon = icon,
+        title = title,
+        summary = summary,
+        colors = colors,
+        onClick = {
+            val newValue = !isEnabled
+            isEnabled = newValue
+            prefs.edit().putBoolean(prefKey, newValue).apply()
+        },
+        trailing = {
+            ClintSwitch(checked = isEnabled)
+        }
+    )
 }
