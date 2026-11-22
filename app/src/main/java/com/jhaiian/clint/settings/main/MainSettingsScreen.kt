@@ -49,7 +49,7 @@ import com.jhaiian.clint.settings.common.settingsSearchHighlight
 import com.jhaiian.clint.ui.theme.LocalClintColors
 
 enum class MainSettingsEntry {
-    BROWSER, LOOK_AND_FEEL, PRIVACY, SITE_SETTINGS, DOWNLOADS, DATA_SAVER, BACKUP_RESTORE, UPDATES, MISC, DEBUG, ABOUT
+    CUSTOM, BROWSER, LOOK_AND_FEEL, PRIVACY, SITE_SETTINGS, DOWNLOADS, DATA_SAVER, BACKUP_RESTORE, UPDATES, MISC, DEBUG, ABOUT
 }
 
 private class MainSettingsItem(
