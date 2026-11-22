@@ -333,11 +333,11 @@ private fun SettingsDetailPane(
                     DEST_UPDATES -> UpdateSettingsPane(activity)
                     DEST_MISC -> MiscPane(activity)
                     DEST_TRANSLATIONS -> com.jhaiian.clint.settings.translations.TranslationsSettingsPane(activity)
-                    DEST_DEBUG -> DebugPane(activity)
-                                        DEST_ABOUT -> AboutPane(activity)
-                    DEST_CUSTOM -> CustomSettingsScreen()
+                                        DEST_DEBUG -> DebugPane(activity)
+                    DEST_ABOUT -> AboutPane(activity)
                 }
             }
+
         }
     }
 }
