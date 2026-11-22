@@ -419,18 +419,29 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         } else {
             val intentUrl = getUrlFromIntent(intent)
             setIntent(android.content.Intent())
-            if (!intentUrl.isNullOrEmpty()) {
+                        if (!intentUrl.isNullOrEmpty()) {
                 restoreTabs()
                 openNewTab(isIncognito = false, url = intentUrl)
             } else {
+                val sessionPrefs = getSharedPreferences("BrowserSession", android.content.Context.MODE_PRIVATE)
+                val restoreEnabled = prefs.getBoolean("restore_session_enabled", true)
+                val savedLastUrl = if (restoreEnabled) sessionPrefs.getString("last_url", null) else null
+
                 val restored = restoreTabs()
                 if (shouldReopenInIncognito()) {
                     openNewTab(isIncognito = true, url = getHomepageUrl(true))
+                } else if (!savedLastUrl.isNullOrBlank()) {
+                    if (!restored) {
+                        openNewTab(isIncognito = false, url = savedLastUrl)
+                    } else {
+                        loadUrl(savedLastUrl)
+                    }
                 } else if (!restored) {
                     openNewTab(isIncognito = false, url = getHomepageUrl(false))
                 }
             }
         }
+
                 setupBackPressedDispatcher()
         
         // NUEVO: Guardar URL solo si el interruptor está activo
