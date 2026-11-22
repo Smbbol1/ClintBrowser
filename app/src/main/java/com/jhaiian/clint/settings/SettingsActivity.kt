@@ -296,10 +296,12 @@ private fun SettingsListPane(
                     onBackupRestoreClick = { onNavigate(DEST_BACKUP_RESTORE, null) },
                     onUpdatesClick = { onNavigate(DEST_UPDATES, null) },
                     onMiscClick = { onNavigate(DEST_MISC, null) },
-                                        onDebugClick = { onNavigate(DEST_DEBUG, null) },
+                                                            onDebugClick = { onNavigate(DEST_DEBUG, null) },
                     onAboutClick = { onNavigate(DEST_ABOUT, null) },
-                    onSupportClintClick = { onNavigate(DEST_SUPPORT_CLINT, null) }
+                    onSupportClintClick = { onNavigate(DEST_SUPPORT_CLINT, null) },
+                    onCustomClick = {}
                 )
+
             }
 
         }
