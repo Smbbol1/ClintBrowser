@@ -54,9 +54,11 @@ import com.jhaiian.clint.base.ClintActivity
 import com.jhaiian.clint.settings.backuprestore.BackupRestorePane
 import com.jhaiian.clint.settings.common.LocalSettingsSearchTarget
 import com.jhaiian.clint.settings.common.SettingsSearchTarget
+import com.jhaiian.clint.settings.main.CustomSettingsScreen
 import com.jhaiian.clint.settings.main.MainSettingsEntry
 import com.jhaiian.clint.settings.main.MainSettingsScreen
 import com.jhaiian.clint.settings.search.SettingsSearchResults
+
 import com.jhaiian.clint.settings.search.SettingsSearchToolbar
 import com.jhaiian.clint.settings.supportclint.SupportClintActivity
 import com.jhaiian.clint.ui.DocumentViewer
