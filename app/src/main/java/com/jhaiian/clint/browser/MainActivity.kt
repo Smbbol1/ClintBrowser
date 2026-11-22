@@ -552,12 +552,25 @@ class MainActivity : ClintActivity(), OverlayHostActivity, SnackbarHostActivity,
         super.onStop()
         recordBrowsingMode()
         refreshBackgroundPlaybackVisibility()
-        if (isFinishing && com.jhaiian.clint.privacy.PrivacyPrefs.closesTabsOnExit(prefs)) {
+                if (isFinishing && com.jhaiian.clint.privacy.PrivacyPrefs.closesTabsOnExit(prefs)) {
             Thread { discardSavedTabs() }.start()
         } else {
             saveTabs()
         }
+        val activeTab = tabManager.activeTab
+        val currentUrl = activeTab?.webView?.url ?: activeTab?.url
+        if (activeTab != null && !activeTab.isIncognito &&
+            !currentUrl.isNullOrBlank() &&
+            currentUrl.startsWith("http") &&
+            !isClintHomeUrl(currentUrl)
+        ) {
+            getSharedPreferences("BrowserSession", android.content.Context.MODE_PRIVATE)
+                .edit()
+                .putString("last_url", currentUrl)
+                .apply()
+        }
         if (refreshLinkSession != null) {
+
             cleanupRefreshLinkTabs()
             refreshLinkSession = null
         }
